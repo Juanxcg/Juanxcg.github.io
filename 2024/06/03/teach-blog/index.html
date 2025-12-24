@@ -1,0 +1,303 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>用Hexo框架搭建博客教程 | Juanxcg' Blog</title><meta name="author" content="Juanxcg"><meta name="copyright" content="Juanxcg"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前述首先向大家说明为什么要搭建博客，很多人可能觉得博客没什么用，中看不中用那种，但是其实并不是这样，对于拥有一个个人的博客，最重要的事就是有了一个记录自己的学习路程并且可以方便的给别人展示的地方或者说是平台，无论以后是自己复习知识或者在自己简历上展示都是一个很好的方法，这一篇博客我就来说明自己搭建博客的过程。 在开始之前，我先点明我在搭建博客所用到的教程，希望对你们有所帮助： 博客大佬写的以Nex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用Hexo框架搭建博客教程">
+<meta property="og:url" content="http://juanxcg.cn/2024/06/03/teach-blog/index.html">
+<meta property="og:site_name" content="Juanxcg&#39; Blog">
+<meta property="og:description" content="前述首先向大家说明为什么要搭建博客，很多人可能觉得博客没什么用，中看不中用那种，但是其实并不是这样，对于拥有一个个人的博客，最重要的事就是有了一个记录自己的学习路程并且可以方便的给别人展示的地方或者说是平台，无论以后是自己复习知识或者在自己简历上展示都是一个很好的方法，这一篇博客我就来说明自己搭建博客的过程。 在开始之前，我先点明我在搭建博客所用到的教程，希望对你们有所帮助： 博客大佬写的以Nex">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/hexo.png">
+<meta property="article:published_time" content="2024-06-03T02:00:00.000Z">
+<meta property="article:modified_time" content="2025-12-24T10:33:56.879Z">
+<meta property="article:author" content="Juanxcg">
+<meta property="article:tag" content="Hexo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/hexo.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "用Hexo框架搭建博客教程",
+  "url": "http://juanxcg.cn/2024/06/03/teach-blog/",
+  "image": "https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/hexo.png",
+  "datePublished": "2024-06-03T02:00:00.000Z",
+  "dateModified": "2025-12-24T10:33:56.879Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Juanxcg",
+      "url": "http://Juanxcg.cn"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg"><link rel="canonical" href="http://juanxcg.cn/2024/06/03/teach-blog/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '用Hexo框架搭建博客教程',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Juanxcg' Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">用Hexo框架搭建博客教程</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">用Hexo框架搭建博客教程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-06-03T02:00:00.000Z" title="发表于 2024-06-03 10:00:00">2024-06-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-24T10:33:56.879Z" title="更新于 2025-12-24 18:33:56">2025-12-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="前述"><a href="#前述" class="headerlink" title="前述"></a>前述</h1><p>首先向大家说明为什么要搭建博客，很多人可能觉得博客没什么用，中看不中用那种，但是其实并不是这样，对于拥有一个个人的博客，最重要的事就是有了一个记录自己的学习路程并且可以方便的给别人展示的地方或者说是平台，无论以后是自己复习知识或者在自己简历上展示都是一个很好的方法，这一篇博客我就来说明自己搭建博客的过程。</p>
+<p>在开始之前，我先点明我在搭建博客所用到的教程，希望对你们有所帮助：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/huanhao/p/hexobase.html">博客大佬写的以Next为主题的搭建流程</a>这个是对我帮助的最大的一个教程里面的流程十分清楚，但是可能是四年前的教学，有些对于初学者不太懂的东西没有提到，所以我也花费了很大的功夫才搭成了这个博客。</p>
+<h1 id="搭建博客"><a href="#搭建博客" class="headerlink" title="搭建博客"></a>搭建博客</h1><h2 id="前置工具"><a href="#前置工具" class="headerlink" title="前置工具"></a>前置工具</h2><p>在开始搭建博客之前，我们需要下载前置的各种软件，我会在下面一一列出：</p>
+<h3 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h3><blockquote>
+<p>下载地址:<a target="_blank" rel="noopener" href="https://nodejs.cn/download/">https://nodejs.cn/download/</a></p>
+</blockquote>
+<p><strong>PS:如果以前下载过Node.js的朋友建议去更新一下版本，或者直接安装覆盖，因为之后用Hexo选主题会有很多主题不支持老版本的Node.js会出现很多莫名其妙的错误</strong></p>
+<p>可以安装到别的盘，不用非要安装在系统盘。</p>
+<p>建议下载长期支持的版本，新的版本可能会有稀奇古怪的bug</p>
+<p><img src="https://s2.loli.net/2024/03/06/oQu7JWdFfUbsOn2.png" alt="Node-setup.png"></p>
+<p>安装的时候记得选<code>Add To Path</code>不然之后在命令行操作会识别不到。</p>
+<h3 id="git"><a href="#git" class="headerlink" title="git"></a>git</h3><blockquote>
+<p>下载地址：<a target="_blank" rel="noopener" href="https://git-scm.com/">https://git-scm.com/</a></p>
+</blockquote>
+<p><img src="https://s2.loli.net/2024/03/06/uq4RPyEgnMwsb3v.png" alt="git-setup-1.png"></p>
+<p>点击<code>DownLoad</code>即可下载最新版。</p>
+<p>选择合适的安装位置之后一直点Next就好。</p>
+<p>安装之后在桌面上右键即可验证:</p>
+<p><img src="https://s2.loli.net/2024/03/06/i1CtzB2bKZVSqe6.png" alt="git-setup-2.png"></p>
+<p>点击Open Git Bash here。</p>
+<p>分别输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">node -v</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm -v</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/03/06/4vQUSHfidWKsZl9.png" alt="git-setup-3.png"></p>
+<p>如果能够看到版本号就算安装完成了。</p>
+<h3 id="cnpm"><a href="#cnpm" class="headerlink" title="cnpm"></a>cnpm</h3><p>cnpm是一个国内的对于Node.js上的npm的镜像工具，能够加速各种插件的下载，npm在安装插件的时候经常会卡住，所以就会有这个镜像。</p>
+<p>想要配置也很简单，在刚刚的git命令行中执行以下命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g cnpm --registry=https://registry.npm.taobao.org</span></span><br></pre></td></tr></table></figure>
+
+<p>这个代码大致意思就是用npm下载cnpm但是是借用的国内的淘宝NPM镜像下载。</p>
+<p>之后在命令行中输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">cnpm -v</span></span><br></pre></td></tr></table></figure>
+
+<p>如果输出版本号就是安装成功了。</p>
+<h3 id="Hexo"><a href="#Hexo" class="headerlink" title="Hexo"></a>Hexo</h3><p><strong>安装之前先介绍一下Hexo:</strong> Hexo是借助于Node.js的快速、简洁且高效的博客框架，并且里面会有很多博客的主题，所以被很多人应用在自己的博客框架搭建中。</p>
+<blockquote>
+<p>官方文档：<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/index.html">https://hexo.io/zh-cn/docs/index.html</a></p>
+</blockquote>
+<p>在git bash命令行中执行以下命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">cnpm install hexo-cil -g</span></span><br></pre></td></tr></table></figure>
+
+<p>到现在我们所有的前置工具都已经配置完成了。</p>
+<h2 id="初始化博客"><a href="#初始化博客" class="headerlink" title="初始化博客"></a>初始化博客</h2><p>选择一个位置创建自己的博客本地文件夹，然后右键打开git bash</p>
+<p><img src="https://s2.loli.net/2024/03/06/Ffew6lkc7XM38Hv.png" alt="blog-1.png"></p>
+<p>注意我这是已经搭建完的文件，你的文件夹应该是完全空的。</p>
+<p><strong>（PS:一定要是在自己创建的文件夹的内部打开git bash）</strong></p>
+<p>在命令行中输入以下命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hexo init</span></span><br></pre></td></tr></table></figure>
+<p>这个代码意思是用hexo初始化自己的博客框架</p>
+<p>回车之后可能会卡在<code>Install dependecies</code>这一步，这时候按<code>Ctrl + c</code>结束命令，并输入下列代码来继续安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">cnpm install</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>也可以用github的地址来提取，代码如下</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://e.coding.net/huanhao/hexoblog.git</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>等待完成上述命令之后，自己的博客就完成初始化了！</p>
+<p>用下面的代码来看看自己博客吧！</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hexo s</span></span><br></pre></td></tr></table></figure>
+<p>将出现的地址复制到浏览器打开就是自己博客了（本地端）</p>
+<p><strong>（PS：在命令行中复制粘贴并不是<code>Ctrl + c</code>和<code>Ctrl + v</code>如果不熟悉可以右键找<code>Copy</code>和<code>Paste</code>）</strong></p>
+<h1 id="美化博客"><a href="#美化博客" class="headerlink" title="美化博客"></a>美化博客</h1><h2 id="寻找合适的主题"><a href="#寻找合适的主题" class="headerlink" title="寻找合适的主题"></a>寻找合适的主题</h2><p>在Hexo的博客搭建中，换一个好看的页面就和自己在手机上换主题一个道理，而且大部分的主题都支持高度的自定义，完全能搭建出有自己的风格的博客。</p>
+<p>想要换到自己想要的页面就去下面这个地址去挑吧:</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://hexo.io/themes/">https://hexo.io/themes/</a></p>
+</blockquote>
+<p>但是在挑选主题的时候一定要看这个主题的说明文档，很多主题的文档非常不全！我前面推翻重搭的原因也有很多是因为这个文档中的问题解决非常少！让我遇到问题都无从下手！！！[😡]</p>
+<p>这里我用我的主题butterfly为例演示主题的安装，butterfly的文档是非常完善的，并且配置起来是很方便的。</p>
+<blockquote>
+<p>主题首页：<a target="_blank" rel="noopener" href="https://butterfly.js.org/">https://butterfly.js.org/</a> </p>
+<p>主题github地址：<a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">https://github.com/jerryc127/hexo-theme-butterfly</a></p>
+</blockquote>
+<h2 id="下载主题"><a href="#下载主题" class="headerlink" title="下载主题"></a>下载主题</h2><p>点击绿色的<code>Code</code></p>
+<p>在主页中复制到主题的https的地址</p>
+<p><img src="https://s2.loli.net/2024/03/06/J3jkGQyWeV76z5L.png" alt="theme-1.png"></p>
+<p>在博客文件夹中打开git bash执行以下代码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> 复制的地址 themes/主题名字</span></span><br></pre></td></tr></table></figure>
+<p>代码分析：<code>git clone</code> 是克隆 <code>地址</code> 中的内容到 <code>themes/新的文件夹</code> 中,其中的地址与名字是要更换的，地址就是你复制的https的地址，主题名字是butterfly。</p>
+<blockquote>
+<p>也可以在github中把整个主题下载成Zip压缩文件解压放到文件夹中的themes中</p>
+</blockquote>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>在你创建的博客目录中应该会有 <code>_config.yml</code> 文件，你可以选择用记事本打开或者万能的vscode，在文件中找到 <code>themes</code> 这一行，将主题名字改为butterfly，这样就是告诉hexo要启动这个主题。</p>
+<p><img src="https://s2.loli.net/2024/03/06/pZC1Uhcr4oVRWkx.png" alt="theme-2.png"></p>
+<h2 id="补充缺失的组件"><a href="#补充缺失的组件" class="headerlink" title="补充缺失的组件"></a>补充缺失的组件</h2><p>接下来再运行你所搭建的博客</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hexo s</span></span><br></pre></td></tr></table></figure>
+
+<p>你很有可能遇到如下错误</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error: Cannot find module &#x27;某个组件&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>这就是某些主题用了Node.js安装的时候没有的组件，这时候你就可以就用npm安装相关组件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install <span class="string">&#x27;组件名&#x27;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>直接把组件名复制过来，用npm安装。</p>
+<blockquote>
+<p><strong>(PS：如果回车之后长时间不动的，就换成用cnpm安装</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">cnpm install <span class="string">&#x27;组件名&#x27;</span></span></span><br></pre></td></tr></table></figure>
+<p><strong>)</strong></p>
+</blockquote>
+<p>等安装完所有组件之后用</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hexo s</span></span><br></pre></td></tr></table></figure>
+
+<p>就是一个你喜欢主题的本地博客了！</p>
+<h1 id="上传博客"><a href="#上传博客" class="headerlink" title="上传博客"></a>上传博客</h1><h2 id="创建远程仓库"><a href="#创建远程仓库" class="headerlink" title="创建远程仓库"></a>创建远程仓库</h2><p>打开自己的github主页</p>
+<p><img src="https://s2.loli.net/2024/03/06/jZGuv6xYep7d3IH.png" alt="up-1.png"></p>
+<p>点击绿色的 <code>New</code> ，进入到下面的界面。</p>
+<p><img src="https://s2.loli.net/2024/03/06/DVn6zY8lXTJNLMs.png" alt="up-2.png"></p>
+<p>创建的时候将仓库名设为：个人的github名字.github.io，至于为什么这么设我们之后会提到。</p>
+<p>其他的设置可以不用动，点击 <code>Create repository</code> 就创建好了新的仓库。</p>
+<h2 id="配置SSH密钥"><a href="#配置SSH密钥" class="headerlink" title="配置SSH密钥"></a>配置SSH密钥</h2><p>如果github已经配置好密钥的可以直接跳过。</p>
+<p>打开git bash命令行（不要求位置）输入以下命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh-keygen -t rsa -C “你的邮箱“</span></span><br></pre></td></tr></table></figure>
+
+<p>将其中的邮箱换成你的github邮箱，得到SSH密钥，在执行之后一直按回车直到命令结束，接着输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub</span></span><br></pre></td></tr></table></figure>
+
+<p>执行之后会得到你的SSH密钥，复制输出的信息</p>
+<p>点击github仓库页右上角你的头像，在弹出的信息中点击 <code>Settings</code> ,在左侧设置中找到 <code>SSH and GPG keys</code> ，点击<code>New SSH key</code> 将自己复制的密钥粘贴上点击 <code>Add SSH key</code>。</p>
+<p>这样你的SSH密钥就配置成功了</p>
+<h2 id="将博客上传到github"><a href="#将博客上传到github" class="headerlink" title="将博客上传到github"></a>将博客上传到github</h2><p>输入下列代码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> ssh -T git@github.com</span></span><br></pre></td></tr></table></figure>
+<p>等到它提示以下代码，输入yes并回车</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Are you sure you want to continue connecting (yes/no/[fingerprint])?</span><br></pre></td></tr></table></figure>
+<p>在仓库页面点击蓝色框中的 <code>SSH</code> 并复制后面的内容</p>
+<p><img src="https://s2.loli.net/2024/03/06/3Q1OfBjxRMXzop6.png" alt="up-3.png"></p>
+<p>回到自己的博客文件夹，打开 <code>_config.yml</code> 文件，将最后的代码改为如下代码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: 你复制的地址</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+
+<p>在博客文件夹中打开 git bash 分别执行以下命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.name <span class="string">&quot;你的名字&quot;</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.email <span class="string">&quot;你的邮箱&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>然后安装上传的插件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">cnpm install hexo-deployer-git --save</span></span><br></pre></td></tr></table></figure>
+<p>等安装之后输入以下代码上传博客框架</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hexo g -d</span></span><br></pre></td></tr></table></figure>
+<p>等执行完之后就算是上传完成了！</p>
+<h1 id="打开博客"><a href="#打开博客" class="headerlink" title="打开博客"></a>打开博客</h1><p>上传之后刷新github仓库然后点击上方的 <code>Settings</code> 在左侧选择 <code>Pages</code></p>
+<p><img src="https://s2.loli.net/2024/03/06/qunKvOkITCNfV8F.png" alt="open.png"></p>
+<p>看自己的 <code>Build and deploy ment</code> 这一栏的 <code>Branch</code> 是不是已经配置好了，如果是 <code>None</code> 就选中 <code>main</code> 作为自己的 <code>page</code> 的枝干，这里就解释一下为什么仓库名字一定要是固定的了，因为github的博客 <code>page</code> 要指定的仓库名才能创建出自己专属的博客网站，不然hexo的主题会丢失。</p>
+<p>到这一步之后就是等一会刷新一下啦，下面会弹出你的专属博客网站啦。</p>
+<p>博客的自定义详情见主题的官方文档和Hexo的文档。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://Juanxcg.cn">Juanxcg</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://juanxcg.cn/2024/06/03/teach-blog/">http://juanxcg.cn/2024/06/03/teach-blog/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://Juanxcg.cn" target="_blank">Juanxcg' Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Hexo/">Hexo</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/hexo.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/06/23/Voxelization/" title="用Unity实现三维obj文件的体素化"><img class="cover" src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Voxelization.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">用Unity实现三维obj文件的体素化</div></div><div class="info-2"><div class="info-item-1">前言使用unity完成了obj的简单体素化，可以自定义体素精度。 效果示例  算法的大体思路就是把模型缩小到自己设置的体素网格坐标系下，然后计算出每个三角网格面的包围盒，把每个包围盒与自己体素网格相比较，根据值来计算是否应该在这个体素格中生成体素，设置三维bool数组来标记生成的位置。 源码示例： 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091929394959697989910010110210310410510610710810911011111211311411511611711811912012112212312412512612712812913013113213313413513613713813914014114214314414514614714814915015115...</div></div></div></a><a class="pagination-related" href="/2024/05/29/FingerDance/" title="手指跳舞模拟器————一款支持DIY的受苦游戏"><img class="cover" src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/DancingFinger-%E5%B0%81%E9%9D%A2.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">手指跳舞模拟器————一款支持DIY的受苦游戏</div></div><div class="info-2"><div class="info-item-1">作品基本介绍  分享链接: http://pan.dlut.edu.cn/share?id=ffmfkuu9dpz4 视频链接：https://www.bilibili.com/video/BV1NT421Q7EG/?spm_id_from=333.999.0.0&amp;vd_source=21ef5dd001904577c706b7897134152a  这是一款可以支持自定义关卡即DIY的小游戏，由Unity制作，这里我会写一下相对重要的功能实现。 作品拆解DIY部分实现首先是支持DIY的部分，这部分其实非常简单，只需要知道unity的streamingAsset文件夹在构建打包完作品之后里面的内容不会改变即可。实际原理就是在这个文件中做一个按照某项规则创建的文件，可供程序的关卡部分读取实现即可。 123456789101112131415161718192021222324252627public class CSVReading : MonoBehaviour&#123;    private void OnEnable()    &#123;        strin...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Juanxcg</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Juanxcg"><i class="fab fa-github"></i><span>点击进入我的Github</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Juanxcg" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">前述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2"><span class="toc-number">2.</span> <span class="toc-text">搭建博客</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E5%B7%A5%E5%85%B7"><span class="toc-number">2.1.</span> <span class="toc-text">前置工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Node-js"><span class="toc-number">2.1.1.</span> <span class="toc-text">Node.js</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git"><span class="toc-number">2.1.2.</span> <span class="toc-text">git</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cnpm"><span class="toc-number">2.1.3.</span> <span class="toc-text">cnpm</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hexo"><span class="toc-number">2.1.4.</span> <span class="toc-text">Hexo</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E5%8D%9A%E5%AE%A2"><span class="toc-number">2.2.</span> <span class="toc-text">初始化博客</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BE%8E%E5%8C%96%E5%8D%9A%E5%AE%A2"><span class="toc-number">3.</span> <span class="toc-text">美化博客</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BB%E6%89%BE%E5%90%88%E9%80%82%E7%9A%84%E4%B8%BB%E9%A2%98"><span class="toc-number">3.1.</span> <span class="toc-text">寻找合适的主题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E4%B8%BB%E9%A2%98"><span class="toc-number">3.2.</span> <span class="toc-text">下载主题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.3.</span> <span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%E7%BC%BA%E5%A4%B1%E7%9A%84%E7%BB%84%E4%BB%B6"><span class="toc-number">3.4.</span> <span class="toc-text">补充缺失的组件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E5%8D%9A%E5%AE%A2"><span class="toc-number">4.</span> <span class="toc-text">上传博客</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="toc-number">4.1.</span> <span class="toc-text">创建远程仓库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AESSH%E5%AF%86%E9%92%A5"><span class="toc-number">4.2.</span> <span class="toc-text">配置SSH密钥</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%86%E5%8D%9A%E5%AE%A2%E4%B8%8A%E4%BC%A0%E5%88%B0github"><span class="toc-number">4.3.</span> <span class="toc-text">将博客上传到github</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%89%93%E5%BC%80%E5%8D%9A%E5%AE%A2"><span class="toc-number">5.</span> <span class="toc-text">打开博客</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/24/NewYear/" title="一年不见，我回来了！"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/NewYear.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一年不见，我回来了！"/></a><div class="content"><a class="title" href="/2025/12/24/NewYear/" title="一年不见，我回来了！">一年不见，我回来了！</a><time datetime="2025-12-24T08:19:26.000Z" title="发表于 2025-12-24 16:19:26">2025-12-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/11/Bag/" title="关于背包问题的相关思考"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Bag.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="关于背包问题的相关思考"/></a><div class="content"><a class="title" href="/2024/10/11/Bag/" title="关于背包问题的相关思考">关于背包问题的相关思考</a><time datetime="2024-10-11T02:00:00.000Z" title="发表于 2024-10-11 10:00:00">2024-10-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/23/Voxelization/" title="用Unity实现三维obj文件的体素化"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Voxelization.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用Unity实现三维obj文件的体素化"/></a><div class="content"><a class="title" href="/2024/06/23/Voxelization/" title="用Unity实现三维obj文件的体素化">用Unity实现三维obj文件的体素化</a><time datetime="2024-06-23T02:00:00.000Z" title="发表于 2024-06-23 10:00:00">2024-06-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/03/teach-blog/" title="用Hexo框架搭建博客教程"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/hexo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用Hexo框架搭建博客教程"/></a><div class="content"><a class="title" href="/2024/06/03/teach-blog/" title="用Hexo框架搭建博客教程">用Hexo框架搭建博客教程</a><time datetime="2024-06-03T02:00:00.000Z" title="发表于 2024-06-03 10:00:00">2024-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/05/29/FingerDance/" title="手指跳舞模拟器————一款支持DIY的受苦游戏"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/DancingFinger-%E5%B0%81%E9%9D%A2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="手指跳舞模拟器————一款支持DIY的受苦游戏"/></a><div class="content"><a class="title" href="/2024/05/29/FingerDance/" title="手指跳舞模拟器————一款支持DIY的受苦游戏">手指跳舞模拟器————一款支持DIY的受苦游戏</a><time datetime="2024-05-29T02:00:00.000Z" title="发表于 2024-05-29 10:00:00">2024-05-29</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2025 By Juanxcg</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

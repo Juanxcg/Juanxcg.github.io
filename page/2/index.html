@@ -1,0 +1,213 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Juanxcg' Blog</title><meta name="author" content="Juanxcg"><meta name="copyright" content="Juanxcg"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta property="og:type" content="website">
+<meta property="og:title" content="Juanxcg&#39; Blog">
+<meta property="og:url" content="http://juanxcg.cn/page/2/index.html">
+<meta property="og:site_name" content="Juanxcg&#39; Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg">
+<meta property="article:author" content="Juanxcg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg"><script type="application/ld+json"></script><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg"><link rel="canonical" href="http://juanxcg.cn/page/2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Juanxcg\' Blog',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'home'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Juanxcg' Blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">Juanxcg' Blog</h1><div id="site_social_icons"><a class="social-icon" href="https://github.com/Juanxcg" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="post_cover left"><a href="/2024/03/25/CppLearning/" title="算法学习(cpp)"><img class="post-bg" src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/CppLearning.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="算法学习(cpp)"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/25/CppLearning/" title="算法学习(cpp)">算法学习(cpp)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-03-25T02:00:00.000Z" title="发表于 2024-03-25 10:00:00">2024-03-25</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%AD%A6%E6%97%A0%E6%AD%A2%E5%A2%83/">学无止境</a></span></div><div class="content">前述最近要准备笔试，所以对之前学过的算法都复习一遍（可恶，手都已经生了），连最基本的链表反转都要想好一会，最近都会在这个博客上更新这些内容，应该会分类每一个题目的范围，也算是对自己的一个鞭策吧。 同时本文的所有的算法均是出自LeetCode且是由C++编写的，所以酌情观看。 链表链表可以说是C++比较独特的算法题目了，当然是先温习这个部分。 链表反转easy LeetCode题目:https://leetcode.cn/problems/reverse-linked-list/description/  这道题目可以说是非常的经典了，而它的实现方法也有很多种。首先是最常见的用三个指针来进行操作： 12345678910111213141516171819202122232425/** * Definition for singly-linked list. * struct ListNode &#123; *     int val; *     ListNode *next; *     ListNode() : val(0), next(nullptr) &#123;&#12...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/03/13/FSM-Learning2/" title="学习FSM有限状态机有感（二）"><img class="post-bg" src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/FSM-Learning2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习FSM有限状态机有感（二）"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/13/FSM-Learning2/" title="学习FSM有限状态机有感（二）">学习FSM有限状态机有感（二）</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-03-13T02:00:00.000Z" title="发表于 2024-03-13 10:00:00">2024-03-13</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%AD%A6%E6%97%A0%E6%AD%A2%E5%A2%83/">学无止境</a></span></div><div class="content">这里有我对于FSM的第二种理解的写法，也是我第一次参加GameJam的懵懵懂懂的用法，首先这个FSM的中心是在一个FSM的代码中，而不是用泛型扩散到其他的代码中。也就是说，你每一个物体使用状态机就要重写一遍FSM来具体应用这个FSM。 先创建一个接口，用来给每一个状态限制，同时方便状态机来用字典存放每一个状态的切换 1234567public interface IState&#123;    void OnEnter();    void OnUpdate();    void OnFixedUpdate();    void OnExit();&#125;  创建一个枚举类型用来存放每一个所选对象需要的各种类型 123456public enum StateType&#123;    A,    B,    C&#125;  然后就要开始写FSM的主体代码 123456789101112131415161718192021222324252627282930313233public class FSM : MonoBehaviour&#123;    private ISta...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/03/08/FSM-Learning/" title="学习FSM有限状态机有感"><img class="post-bg" src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/FSM-Learning.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="学习FSM有限状态机有感"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/08/FSM-Learning/" title="学习FSM有限状态机有感">学习FSM有限状态机有感</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-03-08T02:00:00.000Z" title="发表于 2024-03-08 10:00:00">2024-03-08</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%AD%A6%E6%97%A0%E6%AD%A2%E5%A2%83/">学无止境</a></span></div><div class="content">学到了凉鞋大佬的FSM简易写法。 今天在编写2024CUSGA的作品的时候，用到了刚学到的FSM状态机的新的写法，很简单，但是也算是五脏俱全了。 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177u...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/03/06/hello-world/" title="我的第一篇博客！"><img class="post-bg" src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="我的第一篇博客！"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/06/hello-world/" title="我的第一篇博客！">我的第一篇博客！</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2024-03-06T02:00:00.000Z" title="发表于 2024-03-06 10:00:00">2024-03-06</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%9D%82%E8%AE%B0/">杂记</a></span></div><div class="content">在长达半个月的了解之后我终于搭建起了我的博客！，搭建的上手操作足足用了两天，其实本身的博客搭建并不难，只是在Hexo中的各种主题搭建实在是太掉头发了，我整整推翻重来了四次！ 总而言之是采用Hexo、git、Node等工具在GitHub上搭建的博客，太帅了！ 之后我会出一个关于博客搭建的教程，给希望搭建博客的人用，希望给他们带来帮助，毕竟我就推翻重来了好多次…… </div></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Juanxcg</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Juanxcg"><i class="fab fa-github"></i><span>点击进入我的Github</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Juanxcg" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客！</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/24/NewYear/" title="一年不见，我回来了！"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/NewYear.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一年不见，我回来了！"/></a><div class="content"><a class="title" href="/2025/12/24/NewYear/" title="一年不见，我回来了！">一年不见，我回来了！</a><time datetime="2025-12-24T08:19:26.000Z" title="发表于 2025-12-24 16:19:26">2025-12-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/11/Bag/" title="关于背包问题的相关思考"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Bag.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="关于背包问题的相关思考"/></a><div class="content"><a class="title" href="/2024/10/11/Bag/" title="关于背包问题的相关思考">关于背包问题的相关思考</a><time datetime="2024-10-11T02:00:00.000Z" title="发表于 2024-10-11 10:00:00">2024-10-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/23/Voxelization/" title="用Unity实现三维obj文件的体素化"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Voxelization.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用Unity实现三维obj文件的体素化"/></a><div class="content"><a class="title" href="/2024/06/23/Voxelization/" title="用Unity实现三维obj文件的体素化">用Unity实现三维obj文件的体素化</a><time datetime="2024-06-23T02:00:00.000Z" title="发表于 2024-06-23 10:00:00">2024-06-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/03/teach-blog/" title="用Hexo框架搭建博客教程"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/hexo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用Hexo框架搭建博客教程"/></a><div class="content"><a class="title" href="/2024/06/03/teach-blog/" title="用Hexo框架搭建博客教程">用Hexo框架搭建博客教程</a><time datetime="2024-06-03T02:00:00.000Z" title="发表于 2024-06-03 10:00:00">2024-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/05/29/FingerDance/" title="手指跳舞模拟器————一款支持DIY的受苦游戏"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/DancingFinger-%E5%B0%81%E9%9D%A2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="手指跳舞模拟器————一款支持DIY的受苦游戏"/></a><div class="content"><a class="title" href="/2024/05/29/FingerDance/" title="手指跳舞模拟器————一款支持DIY的受苦游戏">手指跳舞模拟器————一款支持DIY的受苦游戏</a><time datetime="2024-05-29T02:00:00.000Z" title="发表于 2024-05-29 10:00:00">2024-05-29</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E4%BD%9C%E5%93%81%E9%9B%86/"><span class="card-category-list-name">作品集</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AD%A6%E6%97%A0%E6%AD%A2%E5%A2%83/"><span class="card-category-list-name">学无止境</span><span class="card-category-list-count">10</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%95%99%E7%A8%8B/"><span class="card-category-list-name">教程</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%9D%82%E8%AE%B0/"><span class="card-category-list-name">杂记</span><span class="card-category-list-count">2</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 1.3em; color: #99a1ac">算法</a> <a href="/tags/%E6%9D%82%E8%AE%B0/" style="font-size: 1.1em; color: #999">杂记</a> <a href="/tags/FSM%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA/" style="font-size: 1.3em; color: #99a1ac">FSM有限状态机</a> <a href="/tags/%E5%BF%83%E6%83%85%E5%A5%BD%EF%BC%81/" style="font-size: 1.1em; color: #999">心情好！</a> <a href="/tags/Hexo/" style="font-size: 1.1em; color: #999">Hexo</a> <a href="/tags/Unity/" style="font-size: 1.5em; color: #99a9bf">Unity</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>归档</span>
+      
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/12/">
+            <span class="card-archive-list-date">
+              十二月 2025
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/10/">
+            <span class="card-archive-list-date">
+              十月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/06/">
+            <span class="card-archive-list-date">
+              六月 2024
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/05/">
+            <span class="card-archive-list-date">
+              五月 2024
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/04/">
+            <span class="card-archive-list-date">
+              四月 2024
+            </span>
+            <span class="card-archive-list-count">4</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/03/">
+            <span class="card-archive-list-date">
+              三月 2024
+            </span>
+            <span class="card-archive-list-count">4</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">14</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-12-24T11:47:53.742Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2025 By Juanxcg</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

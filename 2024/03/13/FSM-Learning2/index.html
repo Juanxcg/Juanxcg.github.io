@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>学习FSM有限状态机有感（二） | Juanxcg' Blog</title><meta name="author" content="Juanxcg"><meta name="copyright" content="Juanxcg"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="这里有我对于FSM的第二种理解的写法，也是我第一次参加GameJam的懵懵懂懂的用法，首先这个FSM的中心是在一个FSM的代码中，而不是用泛型扩散到其他的代码中。也就是说，你每一个物体使用状态机就要重写一遍FSM来具体应用这个FSM。 先创建一个接口，用来给每一个状态限制，同时方便状态机来用字典存放每一个状态的切换 1234567public interface IState&#123;    v">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习FSM有限状态机有感（二）">
+<meta property="og:url" content="http://juanxcg.cn/2024/03/13/FSM-Learning2/index.html">
+<meta property="og:site_name" content="Juanxcg&#39; Blog">
+<meta property="og:description" content="这里有我对于FSM的第二种理解的写法，也是我第一次参加GameJam的懵懵懂懂的用法，首先这个FSM的中心是在一个FSM的代码中，而不是用泛型扩散到其他的代码中。也就是说，你每一个物体使用状态机就要重写一遍FSM来具体应用这个FSM。 先创建一个接口，用来给每一个状态限制，同时方便状态机来用字典存放每一个状态的切换 1234567public interface IState&#123;    v">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/FSM-Learning2.jpg">
+<meta property="article:published_time" content="2024-03-13T02:00:00.000Z">
+<meta property="article:modified_time" content="2025-12-24T10:58:23.716Z">
+<meta property="article:author" content="Juanxcg">
+<meta property="article:tag" content="FSM有限状态机">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/FSM-Learning2.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "学习FSM有限状态机有感（二）",
+  "url": "http://juanxcg.cn/2024/03/13/FSM-Learning2/",
+  "image": "https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/FSM-Learning2.jpg",
+  "datePublished": "2024-03-13T02:00:00.000Z",
+  "dateModified": "2025-12-24T10:58:23.716Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Juanxcg",
+      "url": "http://Juanxcg.cn"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg"><link rel="canonical" href="http://juanxcg.cn/2024/03/13/FSM-Learning2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '学习FSM有限状态机有感（二）',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Juanxcg' Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">学习FSM有限状态机有感（二）</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">学习FSM有限状态机有感（二）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-13T02:00:00.000Z" title="发表于 2024-03-13 10:00:00">2024-03-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-24T10:58:23.716Z" title="更新于 2025-12-24 18:58:23">2025-12-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%AD%A6%E6%97%A0%E6%AD%A2%E5%A2%83/">学无止境</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>这里有我对于FSM的第二种理解的写法，也是我第一次参加GameJam的懵懵懂懂的用法，首先这个FSM的中心是在一个FSM的代码中，而不是用泛型扩散到其他的代码中。也就是说，你每一个物体使用状态机就要重写一遍FSM来具体应用这个FSM。</p>
+<p>先创建一个接口，用来给每一个状态限制，同时方便状态机来用字典存放每一个状态的切换</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IState</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnEnter</span>()</span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnUpdate</span>()</span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnFixedUpdate</span>()</span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnExit</span>()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建一个枚举类型用来存放每一个所选对象需要的各种类型</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="built_in">enum</span> StateType</span><br><span class="line">&#123;</span><br><span class="line">    A,</span><br><span class="line">    B,</span><br><span class="line">    C</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后就要开始写FSM的主体代码</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">FSM</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> IState currentState;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> Dictionary&lt;StateType,IState&gt; states = <span class="keyword">new</span> Dictionary&lt;StateType,IState&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        states.Add(StateType.A, <span class="keyword">new</span> A(<span class="keyword">this</span>));</span><br><span class="line">        states.Add(StateType.B, <span class="keyword">new</span> B(<span class="keyword">this</span>));</span><br><span class="line">        states.Add(StateType.C, <span class="keyword">new</span> C(<span class="keyword">this</span>));</span><br><span class="line"></span><br><span class="line">        TransitionState(StateType.A);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Update</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        currentState.OnUpdate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">FixedUpdate</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        currentState.OnFixedUpdate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">TransitionState</span>(<span class="params">StateType type</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (currentState != <span class="literal">null</span>)</span><br><span class="line">            currentState.OnExit();</span><br><span class="line">        currentState = states[type];</span><br><span class="line">        currentState.OnEnter();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的<code>Start</code>方法中，很明显的有这么三行</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">states.Add(StateType.A, <span class="keyword">new</span> A(<span class="keyword">this</span>));</span><br><span class="line">states.Add(StateType.B, <span class="keyword">new</span> B(<span class="keyword">this</span>)); </span><br><span class="line">states.Add(StateType.C, <span class="keyword">new</span> C(<span class="keyword">this</span>));</span><br></pre></td></tr></table></figure>
+<p>这就是与上一个FSM写法的最大的区别，就是中心化。</p>
+<p>下面对其中一种状态进行定义</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">A</span> : <span class="title">IState</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> FSM manager;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">IdleState</span>(<span class="params">FSM manager</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">this</span>.manager = manager;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnEnter</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//TODO</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnUpdate</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//TODO</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnFixedUpdate</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//TODO</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnExit</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//TODO</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>写到这里，你们肯定都豁然开朗了，在这里面是直接把FSM当作中心，用状态的构造函数来获取FSM脚本的具体方法。然后把状态的切换都写在其他的类中，改变FSM的<code>currentState</code>来实现状态的切换。</p>
+<p>这个写法中，FSM中可以写很多各个状态通用的方法，并且可以用在其他的状态中。这种写法的优点就是代码分散在很多脚本中，每一个状态都可以写一个单独的脚本，但是缺点也很明显，每次写一种新的状态机就要重写一次FSM，比较适合大的项目，状态机的数量少但是状态很多的工程中。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://Juanxcg.cn">Juanxcg</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://juanxcg.cn/2024/03/13/FSM-Learning2/">http://juanxcg.cn/2024/03/13/FSM-Learning2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://Juanxcg.cn" target="_blank">Juanxcg' Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/FSM%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA/">FSM有限状态机</a></div><div class="post-share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/FSM-Learning2.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/03/25/CppLearning/" title="算法学习(cpp)"><img class="cover" src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/CppLearning.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">算法学习(cpp)</div></div><div class="info-2"><div class="info-item-1">前述最近要准备笔试，所以对之前学过的算法都复习一遍（可恶，手都已经生了），连最基本的链表反转都要想好一会，最近都会在这个博客上更新这些内容，应该会分类每一个题目的范围，也算是对自己的一个鞭策吧。 同时本文的所有的算法均是出自LeetCode且是由C++编写的，所以酌情观看。 链表链表可以说是C++比较独特的算法题目了，当然是先温习这个部分。 链表反转easy LeetCode题目:https://leetcode.cn/problems/reverse-linked-list/description/  这道题目可以说是非常的经典了，而它的实现方法也有很多种。首先是最常见的用三个指针来进行操作： 12345678910111213141516171819202122232425/** * Definition for singly-linked list. * struct ListNode &#123; *     int val; *     ListNode *next; *     ListNode() : val(0), next(nullptr) &#123;&#12...</div></div></div></a><a class="pagination-related" href="/2024/03/08/FSM-Learning/" title="学习FSM有限状态机有感"><img class="cover" src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/FSM-Learning.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">学习FSM有限状态机有感</div></div><div class="info-2"><div class="info-item-1">学到了凉鞋大佬的FSM简易写法。 今天在编写2024CUSGA的作品的时候，用到了刚学到的FSM状态机的新的写法，很简单，但是也算是五脏俱全了。 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177u...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2024/03/08/FSM-Learning/" title="学习FSM有限状态机有感"><img class="cover" src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/FSM-Learning.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-08</div><div class="info-item-2">学习FSM有限状态机有感</div></div><div class="info-2"><div class="info-item-1">学到了凉鞋大佬的FSM简易写法。 今天在编写2024CUSGA的作品的时候，用到了刚学到的FSM状态机的新的写法，很简单，但是也算是五脏俱全了。 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177u...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Juanxcg</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Juanxcg"><i class="fab fa-github"></i><span>点击进入我的Github</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Juanxcg" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客！</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/24/NewYear/" title="一年不见，我回来了！"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/NewYear.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一年不见，我回来了！"/></a><div class="content"><a class="title" href="/2025/12/24/NewYear/" title="一年不见，我回来了！">一年不见，我回来了！</a><time datetime="2025-12-24T08:19:26.000Z" title="发表于 2025-12-24 16:19:26">2025-12-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/11/Bag/" title="关于背包问题的相关思考"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Bag.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="关于背包问题的相关思考"/></a><div class="content"><a class="title" href="/2024/10/11/Bag/" title="关于背包问题的相关思考">关于背包问题的相关思考</a><time datetime="2024-10-11T02:00:00.000Z" title="发表于 2024-10-11 10:00:00">2024-10-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/23/Voxelization/" title="用Unity实现三维obj文件的体素化"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Voxelization.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用Unity实现三维obj文件的体素化"/></a><div class="content"><a class="title" href="/2024/06/23/Voxelization/" title="用Unity实现三维obj文件的体素化">用Unity实现三维obj文件的体素化</a><time datetime="2024-06-23T02:00:00.000Z" title="发表于 2024-06-23 10:00:00">2024-06-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/03/teach-blog/" title="用Hexo框架搭建博客教程"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/hexo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用Hexo框架搭建博客教程"/></a><div class="content"><a class="title" href="/2024/06/03/teach-blog/" title="用Hexo框架搭建博客教程">用Hexo框架搭建博客教程</a><time datetime="2024-06-03T02:00:00.000Z" title="发表于 2024-06-03 10:00:00">2024-06-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/05/29/FingerDance/" title="手指跳舞模拟器————一款支持DIY的受苦游戏"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/DancingFinger-%E5%B0%81%E9%9D%A2.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="手指跳舞模拟器————一款支持DIY的受苦游戏"/></a><div class="content"><a class="title" href="/2024/05/29/FingerDance/" title="手指跳舞模拟器————一款支持DIY的受苦游戏">手指跳舞模拟器————一款支持DIY的受苦游戏</a><time datetime="2024-05-29T02:00:00.000Z" title="发表于 2024-05-29 10:00:00">2024-05-29</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2025 By Juanxcg</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
