@@ -1,6 +1,6 @@
 ---
 title: 我的第一篇博客！
-data: 3/6/2024
+date: 2024-03-06 10:00:00
 tags: 心情好！
 categories: 杂记
 cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png

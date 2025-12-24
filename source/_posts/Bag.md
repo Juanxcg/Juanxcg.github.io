@@ -1,6 +1,6 @@
 ---
 title: 关于背包问题的相关思考
-date: 10/11/2024
+date: 2024-10-11 10:00:00
 tags: 算法
 categories: 学无止境
 top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png

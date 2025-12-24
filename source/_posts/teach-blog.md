@@ -1,6 +1,6 @@
 ---
 title: 用Hexo框架搭建博客教程
-data: 3/6/2024
+date: 2024-06-03 10:00:00
 tags: Hexo
 categories: 教程
 top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png

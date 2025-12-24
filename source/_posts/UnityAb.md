@@ -1,6 +1,6 @@
 ---
 title: Unity关于AB包的学习
-date: 5/31/2024
+date: 2024-05-23 10:00:00
 tags: Unity
 categories: 学无止境
 top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png

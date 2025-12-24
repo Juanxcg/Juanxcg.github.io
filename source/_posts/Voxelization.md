@@ -1,6 +1,6 @@
 ---
 title: 用Unity实现三维obj文件的体素化
-date: 6/23/2024
+date: 2024-06-23 10:00:00
 tags: Unity
 categories: 学无止境
 top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png

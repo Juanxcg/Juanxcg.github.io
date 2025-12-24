@@ -1,6 +1,6 @@
 ---
 title: 学习FSM有限状态机有感
-data: 3/8/2024
+date: 2024-03-08 10:00:00
 tags: FSM有限状态机
 categories: 学无止境
 top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png

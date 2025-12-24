@@ -1,6 +1,6 @@
 ---
 title: 手指跳舞模拟器————一款支持DIY的受苦游戏
-date: 5/19/2024
+date: 2024-05-29 10:00:00
 tags: Unity
 categories: 作品集
 top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png
