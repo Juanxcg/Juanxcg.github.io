@@ -3,8 +3,8 @@ title: 用Hexo框架搭建博客教程
 data: 3/6/2024
 tags: Hexo
 categories: 教程
-top_img: /image/backGround.png
-cover: /image/tech-blog/hexo.png
+top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png
+cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/hexo.png
 ---
 # 前述
 首先向大家说明为什么要搭建博客，很多人可能觉得博客没什么用，中看不中用那种，但是其实并不是这样，对于拥有一个个人的博客，最重要的事就是有了一个记录自己的学习路程并且可以方便的给别人展示的地方或者说是平台，无论以后是自己复习知识或者在自己简历上展示都是一个很好的方法，这一篇博客我就来说明自己搭建博客的过程。

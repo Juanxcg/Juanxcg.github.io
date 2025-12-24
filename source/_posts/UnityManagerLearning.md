@@ -3,18 +3,18 @@ title: Unity基本框架
 date: 4/6/2024
 tags: Unity
 categories: 学无止境
-top_img: /image/backGround.png
-cover: /image/UnityLearning/UnityMangerLearning.jpg
+top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png
+cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/UnityMangerLearning.jpg
 ---
 # 前述
 
-总结的一些Unity的常用框架
+总结的一些Unity的常用工具集
 
-# UI
+# UIS
 
-这是我根据网上的一些框架自己总结写出的基本框架，感觉比较好用。
+这是我根据网上的一些框架自己总结写出的小框架，感觉比较好用。
 
-## UIManger
+## UIManager
 
 ```Csharp
 using Newtonsoft.Json;
@@ -470,7 +470,7 @@ namespace UI
 ```
 
 
-# SceneManger
+# SceneManager
 
 接下来登场的是，我自己实际用的超精简SceneManger，属于是想用什么内容就加什么内容了哈哈
 
@@ -478,44 +478,32 @@ namespace UI
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Juanxcg
+namespace Manager
 {
-    public class SceneManger : MonoBehaviour
+    public class MySceneManager : SingletonMono<MySceneManager>
     {
-        private bool _isActionOut = false;
-
-        private static SceneManger _instance;
-
-        public static SceneManger Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = GameObject.Find(nameof(SceneManger)).GetComponent<SceneManger>();
-                }
-
-                return _instance;
-            }
-        }
-
+        //场景的加载进度条Value
         public float loadingValue { get; private set; }
+        
+        //加载进度条的Panel
+        public GameObject LoadingPanel;
 
         //设置基本的场景切换后的方法(例如角色血条的加载等等)
-        public Action onStartAction;
-
-
+        private Action onStartAction;
+        
+        //判断是否已经执行回调
+        private bool _isActionOut = false;
+        
         public int GetSceneNumber
         {
             get { return SceneManager.GetActiveScene().buildIndex; }
         }
 
-        //设置不销毁的物体
-        public List<GameObject> objectsDontDestory;
+        //设置不销毁的物体的List
+        private List<GameObject> objectsDontDestory;
 
         /// <summary>
         /// 设置不随场景切换而销毁的物体
@@ -587,15 +575,16 @@ namespace Juanxcg
 
 
         /// <summary>
-        /// 通过名字删除某一个物体
+        /// 通过名字将一个物体从不可删除队列中移除
         /// </summary>
         /// <param name="name"></param>
-        public void DeleteDontGameObject(string name)
+        public void RemoveDontGameObject(string name)
         {
             for (int i = 0; i < objectsDontDestory.Count; i++)
             {
                 if (objectsDontDestory[i].name == name)
                 {
+                    objectsDontDestory[i].transform.SetParent(null);
                     objectsDontDestory.Remove(objectsDontDestory[i]);
                 }
             }
@@ -619,18 +608,22 @@ namespace Juanxcg
 
 
         /// <summary>
-        /// 清空
+        /// 初始化
         /// </summary>
         public void Clear()
         {
+            foreach (var bGameObject in objectsDontDestory)
+            {
+                bGameObject.transform.SetParent(null);
+            }
             objectsDontDestory.Clear();
             onStartAction = null;
         }
 
 
-        
         public void PushLoadPanel()
         {
+            LoadingPanel.SetActive(true);
             //放入面板的相关代码
         }
     }
@@ -638,3 +631,296 @@ namespace Juanxcg
 ```
 
 这一点代码实现了基本的场景切换的部分功能。
+
+# MusicManager
+
+这里是一个比较简单的全局音乐管理的实现代码
+
+## Music
+
+```Csharp
+[System.Serializable]
+public class Music
+{
+    public string name;
+    public AudioClip clip;
+    [Range(0f, 1f)] public float volume = 1f;
+}
+```
+## MusicManager
+
+```Csharp
+public class MusicManager : MonoSingleton<MusicManager>
+{
+    public List<Music> musicSounds, sfxSounds;
+
+    [SerializeField] private AudioSource musicSource, sfxSource;
+    
+    public float musicVolume => musicSource.volume;
+    public float sfxVolume => sfxSource.volume;
+    
+    //播放音乐的方法，参数为音乐名称
+    public void PlayMusic(string name)
+    {
+        //从音乐Sounds数组中找到名字匹配的Sound对象
+        Music s = musicSounds.Find(x => x.name == name);
+        //如果找不到对应的Sound，输出错误信息
+        if (s == null)
+        {
+            Debug.Log("没有找到音乐");
+        }
+        //否则将音乐源的clip设置为对应Sound的clip并播放
+        else
+        {
+            musicSource.clip = s.clip;
+            musicSource.Play();
+        }
+    }
+
+    //播放音效的方法，参数为音效名称
+    public void PlaySFX(string name)
+    {
+        //从音效Sounds数组中找到名字匹配的Sound对象
+        Music s = sfxSounds.Find(x => x.name == name);
+        //如果找不到对应的Sound，输出错误信息
+        if (s == null)
+        {
+            Debug.Log("没有找到音效");
+        }
+        //否则播放对应Sound的clip
+        else
+        {
+            sfxSource.PlayOneShot(s.clip);
+        }
+    }
+
+    //暂停音乐
+    public void PauseMusic()
+    {
+        musicSource.Pause();
+    }
+
+    public void UnPauseMusic()
+    {
+        musicSource.UnPause();
+    }
+
+    //暂停音效
+    public void StopSFX()
+    {
+        sfxSource.Stop();
+    }
+
+    //切换音乐的静音状态
+    public void ToggleMusic()
+    {
+        musicSource.mute = !musicSource.mute;
+    }
+
+    //切换音效的静音状态
+    public void ToggleSFX()
+    {
+        sfxSource.mute = !sfxSource.mute;
+    }
+
+    //设置音乐音量的方法，参数为音量值
+    public void MusicVolume(int volume)
+    {
+        float V = volume / 10f;
+        musicSource.volume = V;
+    }
+
+    //设置音效音量的方法，参数为音量值
+    public void SFXVolume(int volume)
+    {
+        float V = volume / 10f;
+        sfxSource.volume = V;
+    }
+}
+```
+
+# BuffManager
+
+写了一个比较好用的BuffManager
+
+## Buff
+
+先写一个通用的Buff接口
+
+```csharp
+public interface IBuff
+{
+    public void OnBuffAdd();
+
+    public void OnBuffUpdate();
+
+    public void OnBuffRemove();
+}
+```
+## BuffManager
+
+然后就是主要的BuffManager代码
+
+```csharp
+    public class BuffsManager : SingletonMono<BuffsManager>
+    {
+        private List<IBuff> _buffs;
+
+        #region 私有方法
+        private IBuff Creat(Enums.Buff buff)
+        {
+            return buff switch
+            {
+                //这里写枚举转换成具体类
+                //例如: Enums.Buff.egBuff => new egBuff(),
+                _ => throw new ArgumentOutOfRangeException(nameof(buff), buff, null)
+            };
+        }
+        
+        private void AddBuff(IBuff buff)
+        {
+            _buffs.Add(buff);
+            buff.OnBuffAdd();
+        }
+
+        private void RemoveBuff(IBuff buff)
+        {
+            if (_buffs.Contains(buff))
+            {
+                _buffs.Remove(buff);
+                buff.OnBuffRemove();
+            }
+        }
+        
+        private void Update()
+        {
+            foreach (var buff in _buffs)
+            {
+                buff.OnBuffUpdate();
+            }
+        }
+        
+        #endregion
+
+        public void AddBuff(Enums.Buff buff)
+        {
+            AddBuff(Creat(buff));
+        }
+
+        public void RemoveBuff(Enums.Buff buff)
+        {
+            RemoveBuff(Creat(buff));
+        }
+
+        public bool Contains(Enums.Buff buff)
+        {
+            return _buffs.Contains(Creat(buff));
+        }
+    }
+
+```
+
+# TimeManager
+
+这里是我主要用到的计时器的用法，一般配合上面的buffmanager一起用。
+
+## Timer
+
+```csharp
+    public class Timer
+    {
+        private float time;
+        private float timer;
+        private Action callback;
+        private bool isRepeat;
+        public float Time => timer;
+        public Timer(float time, bool isRepeat, Action callback)
+        {
+            this.time = time;
+            this.timer = time;
+            this.callback = callback;
+            this.isRepeat = isRepeat;
+        }
+
+        public void OnUpdate(float deltaTime)
+        {
+            timer -= deltaTime;
+            if (timer <= 0)
+            {
+                if (isRepeat)
+                {
+                    callback?.Invoke();
+                    timer = time + timer;
+                }
+                else
+                {
+                    callback?.Invoke();
+                    TimeManager.Instance.ReleaseTimer(this);
+                }
+            }
+        }
+
+        public void Close(bool isInvoke = false)
+        {
+            if (isInvoke)
+            {
+                callback?.Invoke();
+            }
+            TimeManager.Instance.ReleaseTimer(this);
+        }
+
+        public void Reset()
+        {
+            timer = time;
+        }
+    }
+```
+
+
+## TimeManager
+
+```csharp
+    public class TimeManager : SingletonMono<TimeManager>
+    {
+        private List<Timer> timerList = new List<Timer>();
+        
+        // 单次计时器.
+        public Timer AddTimer(float time, Action callback)
+        {
+            Timer timer = new Timer(time, false, callback);
+            timerList.Add(timer);
+            return timer;
+        }
+        
+        // 循环计时器.
+        public Timer AddRepeatTimer(float time, Action callback)
+        {
+            Timer timer = new Timer(time, true, callback);
+            timerList.Add(timer);
+            return timer;
+        }
+        
+        public void ReleaseTimer(Timer timer)
+        {
+            timerList.Remove(timer);
+        }
+
+        private void Update()
+        {
+            for (int i = 0; i < timerList.Count; i++)
+            {
+                timerList[i].OnUpdate(Time.deltaTime);
+            }
+        }
+
+        public void ClearAllTimer()
+        {
+            foreach (var timer in timerList)
+            {
+                timer?.Close();
+            }
+            
+            timerList.Clear();
+        }
+    }
+```

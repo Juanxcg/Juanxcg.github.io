@@ -3,8 +3,8 @@ title: Unity细节效果实现
 date: 4/22/2024
 tags: Unity
 categories: 学无止境
-top_img: /image/backGround.png
-cover: /image/UnityEffect/UnityEffect.jpg
+top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png
+cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/UnityEffect.jpg
 ---
 
 # 前言
@@ -100,3 +100,141 @@ public class LineCtrler : MonoBehaviour
 ```
 
 然后把几个物体的linerender拖进脚本，就得到了一个简单的虚线流动框了！
+
+# 可折叠与动态添加任务的任务栏
+
+先看效果
+
+![示例](https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Idea.gif)
+
+任务的模板是在Unity的滑动视图中的content操作。
+先给Content物体添加Vertical Layout Group和Content Size Fitter组件来适应Idea的变化。
+
+在下图中，Idea_Content是一个滑动视图，然后再Content中进行了任务的编写，符合人们的逻辑，Idea为整个分级任务，然后Idea_Content用来生成子任务。其中Idea和Idea_Content都有Vertical Layout Group组件，不添加Content Size Fitter组件的原因是因为如果两个相同的Content Size Fitter组件在父子级关系的物体上，就会出现计算异常的BUG，出现计算错误甚至报错的情况。
+
+![层级](https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/%E6%8A%98%E5%8F%A0%E4%BB%BB%E5%8A%A1%E6%A0%8F%E7%9A%84%E5%B1%82%E7%BA%A7.png)
+
+
+源码如下：
+```csharp
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Idea : MonoBehaviour
+{
+    private float time = 0;
+    private float IdeaContentHeight; //子任务高度
+
+    public MyState state;
+
+    public Transform content_F;
+    public List<GameObject> childObject;
+    public GameObject IdeaPra; //子任务的预制体
+
+    private void Start()
+    {
+        state = MyState.Selected;
+        childObject = new List<GameObject>();
+        IdeaContentHeight = IdeaPra.GetComponent<RectTransform>().sizeDelta.y;
+    }
+
+    private void Update()
+    {
+        if (time - 5 > 0)
+        {
+            time = 0;
+            AddItemContent("建筑");
+        }
+
+        time += Time.deltaTime;
+    }
+
+   
+    //折叠按钮的代码
+    public void OnButtonDown()
+    {
+        if (state == MyState.Selected)
+        {
+            state = MyState.Unselected;
+            foreach (var item in childObject)
+            {
+                item.SetActive(false);
+                SetContentSize();
+            }
+        }
+        else
+        {
+            state = MyState.Selected;
+            foreach (var item in childObject)
+            {
+                item.SetActive(true);
+                SetContentSize();
+            }
+        }
+    }
+
+    //加入新的子任务
+    public void AddItemContent(string name)
+    {
+        if (content_F == null)
+        {
+            content_F = transform.GetChild(1);
+        }
+
+        GameObject idea = Instantiate<GameObject>(IdeaPra, content_F);
+        idea.GetComponent<Text>().text = name;
+        childObject.Add(idea);
+        if (state == MyState.Unselected)
+        {
+            idea.SetActive(false);
+        }
+
+        SetContentSize();
+    }
+
+
+    //以下代码为动态更新高度来适应Vertical Layout Group和Content Size Fitter组件
+    public void ChangeHeight(GameObject item, float height)
+    {
+        RectTransform rectTransform = item.GetComponent<RectTransform>();
+
+        if (rectTransform != null)
+        {
+            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, height);
+        }
+    }
+
+    public void SetContentSize()
+    {
+        if (state == MyState.Selected)
+        {
+            ChangeHeight(content_F.gameObject, childObject.Count * IdeaContentHeight);
+            SetSize();
+        }
+        else
+        {
+            ChangeHeight(content_F.gameObject,0);
+            SetSize();
+        }
+    }
+    
+    public void SetSize()
+    {
+        float height = 0;
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            RectTransform rectTransform = transform.GetChild(i).GetComponent<RectTransform>();
+
+            if (rectTransform != null)
+            {
+                height += rectTransform.sizeDelta.y;
+            }
+        }
+
+        ChangeHeight(this.gameObject, height);
+    }
+}
+```
+

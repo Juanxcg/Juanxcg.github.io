@@ -3,8 +3,8 @@ title: 学习FSM有限状态机有感
 data: 3/8/2024
 tags: FSM有限状态机
 categories: 学无止境
-top_img: /image/backGround.png
-cover: /image/FSM-Learning/FSM-Learning.jpg
+top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png
+cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/FSM-Learning.jpg
 ---
 学到了凉鞋大佬的FSM简易写法。
 

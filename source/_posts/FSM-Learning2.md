@@ -3,8 +3,8 @@ title: 学习FSM有限状态机有感（二）
 data: 3/13/2024
 tags: FSM有限状态机
 categories: 学无止境
-top_img: /image/backGround.png
-cover: /image/FSM-Learning/FSM-Learning2.jpg
+top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png
+cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/FSM-Learning2.jpg
 ---
 这里有我对于FSM的第二种理解的写法，也是我第一次参加GameJam的懵懵懂懂的用法，首先这个FSM的中心是在一个FSM的代码中，而不是用泛型扩散到其他的代码中。也就是说，你每一个物体使用状态机就要重写一遍FSM来具体应用这个FSM。
 

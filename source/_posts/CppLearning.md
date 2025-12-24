@@ -3,8 +3,8 @@ title: 算法学习(cpp)
 date: 3/25/2024
 tags: 算法
 categories: 学无止境
-top_img: /image/backGround.png
-cover: /image/CppLearning/CppLearning.jpg
+top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png
+cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/CppLearning.jpg
 ---
 
 # 前述

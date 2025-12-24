@@ -3,8 +3,8 @@ title: Spine-Unity的使用
 date: 4/9/2024
 tags: Unity
 categories: 学无止境
-top_img: /image/backGround.png
-cover: /image/UnityLearning/Spine-Unity.jpg
+top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png
+cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Spine-Unity.jpg
 ---
 # 前述
 

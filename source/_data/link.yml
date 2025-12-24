@@ -6,6 +6,16 @@
       avatar: /image/link/lkk.jpg
       descr: unity程序（佬）
 
+    - name: nico233
+      link: https://nico233.cn
+      avatar: https://nico-blog-img.oss-cn-chengdu.aliyuncs.com/imgs/202312162242696.jpg
+      descr: 我的Unity引路人，神！
+
+    - name: Saurlax
+      link: https://saurlax.com/
+      avatar: https://saurlax.com/avatar_hu1929807770061031292.jpg
+      descr: Exploring the Future of Technology 🚀🔍
+
 - class_name: 网站
   class_desc: 
   link_list:

@@ -40,18 +40,18 @@ social:
 # --------------------------------------
 
 # Favicon（網站圖標）
-favicon: /image/Juanxcg.jpg
+favicon: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg
 
 # Avatar (頭像)
 avatar:
-  img: /image/Juanxcg.jpg
+  img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg
   effect: false
 
 # Disable all banner image
 disable_top_img: false
 
 # The banner image of home page
-index_img: /image/backGround.png
+index_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png
 
 # If the banner of page not setting, it will show the top_img
 default_top_img:
