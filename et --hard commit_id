@@ -1,0 +1,27 @@
+[33mb666554[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: reset: moving to b666554a0c7dca88039f529d9af0b1750578700a
+[33m980e098[m HEAD@{1}: revert: Revert "Up！"
+[33mb666554[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{2}: commit: Up！
+[33m04fcd2d[m HEAD@{3}: reset: moving to origin/main
+[33me5a2370[m HEAD@{4}: commit: 修改日期
+[33mfac3d07[m HEAD@{5}: commit: Add butterfly theme as normal folder
+[33m102948d[m HEAD@{6}: commit: 细节修改
+[33mf002f3c[m HEAD@{7}: commit: 更改页面
+[33m3e06e5b[m HEAD@{8}: commit: Update butterfly submodule pointer
+[33m7b49b15[m HEAD@{9}: checkout: moving from main to main
+[33m7b49b15[m HEAD@{10}: commit: 全部设置完全！
+[33m9dd189e[m HEAD@{11}: commit: Restart
+[33m751b2c7[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/GetPost2[m[33m, [m[1;32mmaster[m[33m, [m[1;32mGetPost2[m[33m)[m HEAD@{12}: checkout: moving from master to main
+[33m751b2c7[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/GetPost2[m[33m, [m[1;32mmaster[m[33m, [m[1;32mGetPost2[m[33m)[m HEAD@{13}: checkout: moving from main to master
+[33m751b2c7[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/GetPost2[m[33m, [m[1;32mmaster[m[33m, [m[1;32mGetPost2[m[33m)[m HEAD@{14}: reset: moving to master
+[33m30b913f[m HEAD@{15}: checkout: moving from master to main
+[33m751b2c7[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/GetPost2[m[33m, [m[1;32mmaster[m[33m, [m[1;32mGetPost2[m[33m)[m HEAD@{16}: checkout: moving from main to master
+[33m30b913f[m HEAD@{17}: checkout: moving from GetPost2 to main
+[33m751b2c7[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/GetPost2[m[33m, [m[1;32mmaster[m[33m, [m[1;32mGetPost2[m[33m)[m HEAD@{18}: checkout: moving from master to GetPost2
+[33m751b2c7[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/GetPost2[m[33m, [m[1;32mmaster[m[33m, [m[1;32mGetPost2[m[33m)[m HEAD@{19}: checkout: moving from GetSource to master
+[33m73c9a1e[m[33m ([m[1;31morigin/GetSource[m[33m, [m[1;32mGetSource[m[33m)[m HEAD@{20}: checkout: moving from main to GetSource
+[33m30b913f[m HEAD@{21}: checkout: moving from master to main
+[33m751b2c7[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/GetPost2[m[33m, [m[1;32mmaster[m[33m, [m[1;32mGetPost2[m[33m)[m HEAD@{22}: checkout: moving from main to master
+[33m30b913f[m HEAD@{23}: revert: Revert "Merge branch 'main' of github.com:Juanxcg/Juanxcg.github.io"
+[33m99ccb1d[m HEAD@{24}: checkout: moving from master to main
+[33m751b2c7[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/GetPost2[m[33m, [m[1;32mmaster[m[33m, [m[1;32mGetPost2[m[33m)[m HEAD@{25}: checkout: moving from main to master
+[33m99ccb1d[m HEAD@{26}: clone: from https://github.com/Juanxcg/Juanxcg.github.io.git
