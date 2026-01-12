@@ -1,10 +1,10 @@
 ---
-title: AssistProject
+title: Unity项目文件详解
 date: 2026-01-12 14:56:23
 tags: Unity
 categories: 学无止境
-top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Head.jpg
-cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Bag.jpg
+top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png 
+cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Head.jpg
 ---
 
 # 前述
