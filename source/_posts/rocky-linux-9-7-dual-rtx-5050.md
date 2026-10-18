@@ -9,7 +9,7 @@ tags:
 categories: 教程
 permalink: rocky-linux-9-7-dual-rtx-5050/
 description: 记录 Rocky Linux 9.7 安装 NVIDIA 开放内核模块驱动、配置双 RTX 5050 六屏的过程，整理内核开发包缺失、DKMS 依赖、Secure Boot 和第二张显卡显示输出未启用等问题。
-cover: about:blank
+cover: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/rocky-linux-9-7-dual-rtx-5050/cover-rocky-linux-9-7.png
 top_img: https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png
 ---
 
