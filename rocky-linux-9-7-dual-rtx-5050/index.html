@@ -1,0 +1,501 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Rocky Linux 9.7 安装 NVIDIA 驱动：双 RTX 5050 六屏配置与踩坑记录 | Juanxcg' Blog</title><meta name="author" content="Juanxcg"><meta name="copyright" content="Juanxcg"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="记录 Rocky Linux 9.7 安装 NVIDIA 开放内核模块驱动、配置双 RTX 5050 六屏的过程，整理内核开发包缺失、DKMS 依赖、Secure Boot 和第二张显卡显示输出未启用等问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rocky Linux 9.7 安装 NVIDIA 驱动：双 RTX 5050 六屏配置与踩坑记录">
+<meta property="og:url" content="https://juanxcg.cn/rocky-linux-9-7-dual-rtx-5050/index.html">
+<meta property="og:site_name" content="Juanxcg&#39; Blog">
+<meta property="og:description" content="记录 Rocky Linux 9.7 安装 NVIDIA 开放内核模块驱动、配置双 RTX 5050 六屏的过程，整理内核开发包缺失、DKMS 依赖、Secure Boot 和第二张显卡显示输出未启用等问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="about:blank">
+<meta property="article:published_time" content="2026-10-18T14:54:42.000Z">
+<meta property="article:modified_time" content="2026-10-18T14:54:42.000Z">
+<meta property="article:author" content="Juanxcg">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Rocky Linux">
+<meta property="article:tag" content="NVIDIA">
+<meta property="article:tag" content="多屏显示">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="about:blank"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Rocky Linux 9.7 安装 NVIDIA 驱动：双 RTX 5050 六屏配置与踩坑记录",
+  "url": "https://juanxcg.cn/rocky-linux-9-7-dual-rtx-5050/",
+  "image": "about:blank",
+  "datePublished": "2026-10-18T14:54:42.000Z",
+  "dateModified": "2026-10-18T14:54:42.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Juanxcg",
+      "url": "https://juanxcg.cn"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg"><link rel="canonical" href="https://juanxcg.cn/rocky-linux-9-7-dual-rtx-5050/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Rocky Linux 9.7 安装 NVIDIA 驱动：双 RTX 5050 六屏配置与踩坑记录',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">19</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/backGround.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Juanxcg' Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Rocky Linux 9.7 安装 NVIDIA 驱动：双 RTX 5050 六屏配置与踩坑记录</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Rocky Linux 9.7 安装 NVIDIA 驱动：双 RTX 5050 六屏配置与踩坑记录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-18T14:54:42.000Z" title="发表于 2026-10-18 22:54:42">2026-10-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-18T14:54:42.000Z" title="更新于 2026-10-18 22:54:42">2026-10-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="前述"><a href="#前述" class="headerlink" title="前述"></a>前述</h1><p>最近在配置 Rocky Linux 9.7 的时候，需要让两张 RTX 5050 各带三个显示器，实现六屏扩展显示。原本以为装好显卡驱动就可以了，实际操作中却遇到了内核开发包缺失、安装依赖时带入新内核、Wi-Fi 无法使用，以及驱动装好了却加载不了等问题。</p>
+<p>这篇文章把两台机器的安装和排错过程整理一下，也方便以后遇到相同问题时查阅。第一台已经实现两张卡各带三屏；第二台在关闭 Secure Boot 后解决了驱动加载问题，六屏重启恢复的结果还需要单独验收。</p>
+<p><strong>这次最终采用的方案是：保留 Wi-Fi 正常的原内核，补齐对应开发包，安装 NVIDIA 开放内核模块驱动，使用 X11，关闭原配置中的 SLI&#x2F;BaseMosaic，再启用第二张显卡的三个输出并保存布局。</strong></p>
+<p><strong>PS：下面的内核版本、驱动版本和接口名称来自本次实际环境，照着操作之前一定要先核对自己的机器。</strong></p>
+<span id="more"></span>
+
+<h1 id="本次环境与结果"><a href="#本次环境与结果" class="headerlink" title="本次环境与结果"></a>本次环境与结果</h1><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>本次记录</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>初始安装系统</td>
+<td>Rocky Linux 9.7，x86_64</td>
+</tr>
+<tr>
+<td>最终采用的内核</td>
+<td><code>5.14.0-611.5.1.el9_7.x86_64</code></td>
+</tr>
+<tr>
+<td>显卡</td>
+<td>两张 GeForce RTX 5050，另有 Intel 核显</td>
+</tr>
+<tr>
+<td>本次安装的 NVIDIA 驱动</td>
+<td><code>615.71.09</code>，开放内核模块</td>
+</tr>
+<tr>
+<td>桌面会话</td>
+<td>X11 &#x2F; Xorg</td>
+</tr>
+<tr>
+<td>Secure Boot</td>
+<td>关闭</td>
+</tr>
+<tr>
+<td>第一台结果</td>
+<td>两张卡各带三屏，六屏全部亮起，后续设置可用</td>
+</tr>
+<tr>
+<td>第二台结果</td>
+<td>关闭 Secure Boot 后驱动恢复正常；暂未单独记录六屏重启验收结果</td>
+</tr>
+</tbody></table>
+<p>这里先说明一个关键点：RTX 5050 属于 Blackwell 架构，需要使用 <strong>NVIDIA 开放内核模块</strong>。它与 Nouveau 驱动不同，两张同型号显卡也只需要安装一套驱动。NVIDIA 在<a target="_blank" rel="noopener" href="https://download.nvidia.com/XFree86/Linux-x86_64/580.142/README/kernel_open.html">开放内核模块说明</a>中明确说明，Blackwell 及后续架构仅由开放内核模块支持。</p>
+<p><strong>另一台电脑的内核、接口名和配置文件必须按实际结果核对。本文中的精确 RPM 地址只适用于上述内核版本。</strong></p>
+<p>本文的 <code>--exclude</code> 参数只限制当前安装事务，不会永久锁定内核或系统版本。保留旧内核也不等于撤销此前更新过的其他软件包；默认 Rocky 9 软件源可能提供后续 9.x 小版本的依赖。若必须严格冻结整个发行版，需要另行规划软件源及版本策略。</p>
+<h1 id="安装前与-BIOS-设置"><a href="#安装前与-BIOS-设置" class="headerlink" title="安装前与 BIOS 设置"></a>安装前与 BIOS 设置</h1><ol>
+<li>备份系统盘重要资料；核对安装磁盘，必要时先断开数据盘。</li>
+<li>使用 Rocky Linux 9.7 x86_64 DVD 镜像，选择“工作站”或“带 GUI 的服务器”。</li>
+<li>创建具有管理员权限的日常用户。</li>
+<li>保留两张显卡，初始调试可先连接一台显示器；连接 Wi-Fi 或有线网络。</li>
+<li>使用 UEFI 启动，保持已验证可用的磁盘控制器设置。</li>
+<li>本次采用关闭 Secure Boot 的路径。</li>
+</ol>
+<p>华硕主板常见路径：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">F7 → Advanced Mode → Boot → Secure Boot → OS Type → Other OS</span><br></pre></td></tr></table></figure>
+
+<p>如果 BIOS 提供 <code>Secure Boot Control</code> 开关，则设置为 <code>Disabled</code>。无需清除安全启动密钥或 TPM，也无需改为 Legacy 启动。</p>
+<p>关闭 Secure Boot 会减少启动签名验证保护；若环境要求保留开启，则需另外完成模块签名与密钥登记。参见 <a target="_blank" rel="noopener" href="https://www.asus.com.cn/support/faq/1049829/">华硕官方安全启动说明</a>。</p>
+<h1 id="检查系统、网络和双卡"><a href="#检查系统、网络和双卡" class="headerlink" title="检查系统、网络和双卡"></a>检查系统、网络和双卡</h1><p>以下命令在目标 Rocky 系统中执行，不是在其他电脑上执行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/rocky-release</span><br><span class="line"><span class="built_in">uname</span> -r</span><br><span class="line">mokutil --sb-state</span><br><span class="line">lspci -nnk | grep -A3 -Ei <span class="string">&#x27;VGA|3D|Display&#x27;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$XDG_SESSION_TYPE</span>&quot;</span></span><br><span class="line"><span class="built_in">cat</span> /proc/cmdline</span><br></pre></td></tr></table></figure>
+
+<p>本次目标内核：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">5.14.0-611.5.1.el9_7.x86_64</span><br></pre></td></tr></table></figure>
+
+<p>成功路径的安全启动状态：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SecureBoot disabled</span><br></pre></td></tr></table></figure>
+
+<p>若 <code>mokutil</code> 或 <code>lspci</code> 不存在，可在联网后按“准备工具与匹配的开发包”一节安装工具，再回来检查。</p>
+<p>如果出现 <code>Could not resolve host</code>，先检查网络：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nmcli device status</span><br><span class="line">getent hosts mirrors.rockylinux.org</span><br><span class="line">getent hosts developer.download.nvidia.com</span><br></pre></td></tr></table></figure>
+
+<p>本次第一次下载失败，是尚未连接 Wi-Fi。后续又曾因新内核下无线网络不可用而无法下载。</p>
+<h1 id="保留网络正常的内核"><a href="#保留网络正常的内核" class="headerlink" title="保留网络正常的内核"></a>保留网络正常的内核</h1><p>这次有一个比较容易绕进去的坑：安装不指定版本的 <code>kernel-devel-matched</code> 时，依赖把新内核一起带进来了。重启到新内核后，Wi-Fi 无法使用；切回原来的内核，Wi-Fi 又恢复了。</p>
+<p>所以我后面采用的办法是：<strong>保留网络正常的原内核，再给它补齐相同版本的开发包。</strong> 这是针对这两台机器的处理方式，并不是说 Rocky 的新内核都不能使用无线网络。</p>
+<p>如果当前已经运行正确内核，只需检查默认启动项：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> grubby --default-kernel</span><br></pre></td></tr></table></figure>
+
+<p>如果需要恢复本次旧内核，先确认启动项存在：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> grubby --info=/boot/vmlinuz-5.14.0-611.5.1.el9_7.x86_64</span><br></pre></td></tr></table></figure>
+
+<p>正常显示该启动项后，再执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> grubby --set-default=/boot/vmlinuz-5.14.0-611.5.1.el9_7.x86_64</span><br><span class="line"><span class="built_in">sudo</span> grubby --default-kernel</span><br></pre></td></tr></table></figure>
+
+<p>保存工作后重启，用 <code>uname -r</code> 确认。若旧启动项不存在，不要照抄设置命令。</p>
+<h1 id="准备工具与匹配的开发包"><a href="#准备工具与匹配的开发包" class="headerlink" title="准备工具与匹配的开发包"></a>准备工具与匹配的开发包</h1><h2 id="准备软件源"><a href="#准备软件源" class="headerlink" title="准备软件源"></a>准备软件源</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf install dnf-plugins-core mokutil pciutils --exclude=<span class="string">&#x27;kernel*&#x27;</span></span><br><span class="line"><span class="built_in">sudo</span> dnf config-manager --set-enabled crb</span><br><span class="line"><span class="built_in">sudo</span> dnf install epel-release --exclude=<span class="string">&#x27;kernel*&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>安装时核对事务列表；任何一步报错就停在该步骤，不要通过 <code>--allowerasing</code> 或取消所有排除条件强行继续。</p>
+<h2 id="安装两个精确匹配的开发包"><a href="#安装两个精确匹配的开发包" class="headerlink" title="安装两个精确匹配的开发包"></a>安装两个精确匹配的开发包</h2><p><strong>仅在 <code>uname -r</code> 为 <code>5.14.0-611.5.1.el9_7.x86_64</code> 时使用下面的地址。</strong></p>
+<p>先安装 <code>kernel-devel</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf install https://download.rockylinux.org/vault/rocky/9.7/AppStream/x86_64/os/Packages/k/kernel-devel-5.14.0-611.5.1.el9_7.x86_64.rpm --exclude=kernel --exclude=kernel-core --exclude=<span class="string">&#x27;kernel-modules*&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>再安装同版本 <code>kernel-devel-matched</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf install https://download.rockylinux.org/vault/rocky/9.7/AppStream/x86_64/os/Packages/k/kernel-devel-matched-5.14.0-611.5.1.el9_7.x86_64.rpm --exclude=kernel --exclude=kernel-core --exclude=<span class="string">&#x27;kernel-modules*&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>这两个精确版本都可以在 <a target="_blank" rel="noopener" href="https://download.rockylinux.org/vault/rocky/9.7/AppStream/x86_64/os/Packages/k/">Rocky 9.7 官方归档</a>中找到。两者作用不同：</p>
+<ul>
+<li><code>kernel-devel</code> 提供编译驱动所需的内核开发目录。</li>
+<li><code>kernel-devel-matched</code> 提供匹配依赖关系；第二台的 DKMS 包明确要求它。</li>
+</ul>
+<p><strong>不要将第二条改成不带版本的 <code>dnf install kernel-devel-matched</code>。</strong> 本次用官方归档中的精确版本满足依赖，同时排除运行内核包变化。</p>
+<p>检查：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rpm -q <span class="string">&quot;kernel-devel-<span class="subst">$(uname -r)</span>&quot;</span></span><br><span class="line">rpm -q <span class="string">&quot;kernel-devel-matched-<span class="subst">$(uname -r)</span>&quot;</span></span><br><span class="line"><span class="built_in">ls</span> -l <span class="string">&quot;/lib/modules/<span class="subst">$(uname -r)</span>/build/Makefile&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>三条均正常后继续。用于内核模块构建的 <code>kernel-devel</code> 必须匹配运行内核；不要仅因用户空间 <code>kernel-headers</code> 包版本不同就盲目降级它。</p>
+<h2 id="归档下载慢时"><a href="#归档下载慢时" class="headerlink" title="归档下载慢时"></a>归档下载慢时</h2><p>若正在下载阶段，可以取消后改为支持断点续传的下载；进入 <code>Running transaction</code> 后不要中断。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fL -C - --retry 3 -o <span class="string">&quot;<span class="variable">$HOME</span>/kernel-devel-5.14.0-611.5.1.el9_7.x86_64.rpm&quot;</span> https://download.rockylinux.org/vault/rocky/9.7/AppStream/x86_64/os/Packages/k/kernel-devel-5.14.0-611.5.1.el9_7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p>完整下载成功后再安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf install <span class="string">&quot;<span class="variable">$HOME</span>/kernel-devel-5.14.0-611.5.1.el9_7.x86_64.rpm&quot;</span> --exclude=kernel --exclude=kernel-core --exclude=<span class="string">&#x27;kernel-modules*&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>分开下载并不能保证提速，但中断后可继续下载；也可将完整 RPM 用 U 盘复制到另一台机器。安装成功后仍需准备前面的 matched 包。</p>
+<h1 id="安装-NVIDIA-开放模块驱动"><a href="#安装-NVIDIA-开放模块驱动" class="headerlink" title="安装 NVIDIA 开放模块驱动"></a>安装 NVIDIA 开放模块驱动</h1><p>安装方式参考 <a target="_blank" rel="noopener" href="https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/rocky-linux.html">NVIDIA 的 Rocky Linux 驱动安装文档</a>。下面在官方仓库安装流程的基础上，保留了本次避免切换运行内核的排除参数。</p>
+<p>如果目标系统已经有其他来源或 <code>.run</code> 安装的驱动，不应直接混装；先确认并处理原安装方式。本节针对新装或沿用本次官方仓库路径的系统。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo</span><br><span class="line"><span class="built_in">sudo</span> dnf clean expire-cache</span><br><span class="line"><span class="built_in">sudo</span> dnf module <span class="built_in">enable</span> nvidia-driver:open-dkms</span><br><span class="line"><span class="built_in">sudo</span> dnf install nvidia-open --exclude=<span class="string">&#x27;kernel*&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>Rocky 9 对应 NVIDIA 仓库代号 <code>rhel9</code>。<code>config-manager</code> 中间是连字符。</p>
+<p>本次安装版本为 <code>615.71.09</code>；<code>open-dkms</code> 会随软件源更新，并未固定驱动版本。需要显示桌面，因此采用包含桌面组件的 <code>nvidia-open</code>，而不是仅计算用途的安装组合。</p>
+<p>安装结束后检查当前内核的模块：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dkms autoinstall -k <span class="string">&quot;<span class="subst">$(uname -r)</span>&quot;</span></span><br><span class="line">dkms status</span><br><span class="line">modinfo -k <span class="string">&quot;<span class="subst">$(uname -r)</span>&quot;</span> -F license nvidia</span><br><span class="line"><span class="built_in">sudo</span> grubby --default-kernel</span><br></pre></td></tr></table></figure>
+
+<p>预期：</p>
+<ul>
+<li>当前内核对应的 NVIDIA 条目显示 <code>installed</code>。</li>
+<li>许可证显示 <code>Dual MIT/GPL</code>。</li>
+<li>默认启动内核仍为保留的旧内核。</li>
+</ul>
+<p><code>dkms autoinstall</code> 若没有输出并立即返回提示符，可能是模块已在软件包安装阶段构建完成；以检查结果为准。尚未返回提示符时，不要重复运行或立即关机。</p>
+<p>保存工作后重启：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> reboot</span><br></pre></td></tr></table></figure>
+
+<p>重新登录检查：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">uname</span> -r</span><br><span class="line">nvidia-smi -L</span><br></pre></td></tr></table></figure>
+
+<p>应列出两张 RTX 5050。这里是大写 <code>-L</code>；小写 <code>-l</code> 表示循环刷新。</p>
+<h1 id="使用-X11，检查-SLI-BaseMosaic"><a href="#使用-X11，检查-SLI-BaseMosaic" class="headerlink" title="使用 X11，检查 SLI&#x2F;BaseMosaic"></a>使用 X11，检查 SLI&#x2F;BaseMosaic</h1><p>本次六屏成功采用 X11。登录界面选择用户后，在会话选项中选择“GNOME on Xorg”（如提供该选项）。进入桌面检查：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$XDG_SESSION_TYPE</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>应显示 <code>x11</code>。不要因为切换为 X11 就认为驱动损坏。</p>
+<p>检查当前配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/X11/xorg.conf.d/10-nvidia.conf</span><br></pre></td></tr></table></figure>
+
+<p>第一台曾存在以下两项：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Option &quot;SLI&quot; &quot;Auto&quot;</span><br><span class="line">Option &quot;BaseMosaic&quot; &quot;on&quot;</span><br></pre></td></tr></table></figure>
+
+<p>当时 <code>nvidia-smi</code> 可以查询到两张卡，但 <code>xrandr --listproviders</code> 只有一个 NVIDIA 显示提供者。关闭这两项并重启后，第二个 NVIDIA 显示提供者出现。这验证了本次配置修改有效，但不表示所有双卡故障都由这两项造成。</p>
+<h2 id="有相同配置时，先备份再修改"><a href="#有相同配置时，先备份再修改" class="headerlink" title="有相同配置时，先备份再修改"></a>有相同配置时，先备份再修改</h2><p>以下备份命令首次执行一次即可；不要用后续状态覆盖原始备份。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">cp</span> -a /etc/X11/xorg.conf.d/10-nvidia.conf /etc/X11/10-nvidia.conf.before-dual-gpu</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> sed -i <span class="string">&#x27;/&quot;SLI&quot;/s/&quot;Auto&quot;/&quot;Off&quot;/; /&quot;BaseMosaic&quot;/s/&quot;on&quot;/&quot;off&quot;/&#x27;</span> /etc/X11/xorg.conf.d/10-nvidia.conf</span><br><span class="line"><span class="built_in">cat</span> /etc/X11/xorg.conf.d/10-nvidia.conf</span><br></pre></td></tr></table></figure>
+
+<p>本次最终文件内容记录如下，供核对：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Section &quot;OutputClass&quot;</span><br><span class="line">    Identifier &quot;nvidia&quot;</span><br><span class="line">    MatchDriver &quot;nvidia-drm&quot;</span><br><span class="line">    Driver &quot;nvidia&quot;</span><br><span class="line">    Option &quot;AllowEmptyInitialConfiguration&quot;</span><br><span class="line">    Option &quot;PrimaryGPU&quot; &quot;yes&quot;</span><br><span class="line">    Option &quot;SLI&quot; &quot;Off&quot;</span><br><span class="line">    Option &quot;BaseMosaic&quot; &quot;off&quot;</span><br><span class="line">EndSection</span><br></pre></td></tr></table></figure>
+
+<p>如果另一台没有该文件、选项不同或配置复杂，不要直接用上面的样例覆盖全部设置。上述替换命令只针对本次实际出现的值，执行后必须查看结果。</p>
+<p>保存工作后重启，继续使用原内核和 X11。</p>
+<h1 id="识别并启用六个屏幕"><a href="#识别并启用六个屏幕" class="headerlink" title="识别并启用六个屏幕"></a>识别并启用六个屏幕</h1><p>在当前图形桌面的终端运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xrandr --listproviders</span><br><span class="line">xrandr --query | grep -E <span class="string">&#x27; connected| disconnected&#x27;</span></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">cat</span> /sys/module/nvidia_drm/parameters/modeset</span><br></pre></td></tr></table></figure>
+
+<p>本次修正配置后的记录：</p>
+<table>
+<thead>
+<tr>
+<th>显示提供者</th>
+<th>能力与含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NVIDIA-0</code></td>
+<td>第一张 NVIDIA 显卡，<code>Source Output</code></td>
+</tr>
+<tr>
+<td><code>NVIDIA-G0</code></td>
+<td>第二张 NVIDIA 显卡，<code>Sink Output</code></td>
+</tr>
+<tr>
+<td><code>modesetting</code></td>
+<td>额外显示提供者，不能仅凭名称认作第二张 RTX 5050</td>
+</tr>
+</tbody></table>
+<p><code>modeset</code> 为 <code>Y</code>。第二张卡已关联到当前桌面，因此本次没有再执行手动 provider 关联命令。</p>
+<p>本次接口记录：</p>
+<table>
+<thead>
+<tr>
+<th>显卡</th>
+<th>已连接输出</th>
+<th>启用前状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>第一张</td>
+<td><code>DP-0</code>、<code>DP-2</code>、<code>DP-4</code></td>
+<td>已显示分辨率与位置</td>
+</tr>
+<tr>
+<td>第二张</td>
+<td><code>DP-1-0</code>、<code>DP-1-2</code>、<code>DP-1-4</code></td>
+<td><code>connected</code>，但没有分辨率与位置</td>
+</tr>
+</tbody></table>
+<p><code>connected</code> 但没有分辨率和位置，表示被识别但没有启用输出。<code>nvidia-smi</code> 的 <code>Disp.A Off</code> 是显示状态，不是可以直接打开的开关；启用持久模式也不是点亮显示器的方法。</p>
+<p><strong>仅当实际接口名称与上表一致时，使用本次成功的命令：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xrandr --output DP-1-0 --auto --right-of DP-2 --output DP-1-2 --auto --right-of DP-1-0 --output DP-1-4 --auto --right-of DP-1-2</span><br></pre></td></tr></table></figure>
+
+<p>不加 <code>sudo</code>。这条命令以 <code>DP-2</code> 为参照，把新启用的三个屏幕依次排在它右侧；第一台执行后，六个屏幕就都亮起来了。最终摆放位置再到桌面设置里调整。</p>
+<p>若接口名不同，必须替换为实际已连接接口；若第二个 NVIDIA 显示提供者尚未出现，不应直接套用此命令。</p>
+<h1 id="保存布局与完成验收"><a href="#保存布局与完成验收" class="headerlink" title="保存布局与完成验收"></a>保存布局与完成验收</h1><p>进入“设置 → 显示器”：</p>
+<ol>
+<li>使用扩展&#x2F;加入显示器模式，按实际摆放位置排列六屏。</li>
+<li>选择主屏、分辨率和缩放比例。</li>
+<li>初次调试先使用约 60 Hz，稳定后再逐项调整。</li>
+<li>点击“应用”，确认保留更改。</li>
+</ol>
+<p>命令行 <code>xrandr</code> 调整只影响当前会话。通过桌面设置保存布局后，仍需重启验证是否恢复。</p>
+<p>验收项目：</p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>uname -r</code> 为目标旧内核。</li>
+<li><input disabled="" type="checkbox"> Wi-Fi 可以连接。</li>
+<li><input disabled="" type="checkbox"> <code>nvidia-smi -L</code> 能列出两张卡。</li>
+<li><input disabled="" type="checkbox"> 六个显示输出均启用，可显示画面。</li>
+<li><input disabled="" type="checkbox"> 主屏、位置、分辨率和缩放符合实际摆放。</li>
+<li><input disabled="" type="checkbox"> 鼠标和窗口可以按预期跨屏移动。</li>
+<li><input disabled="" type="checkbox"> 重启并登录后，六屏和布局恢复。</li>
+</ul>
+<p>如用于长期展示，再按需要调整自动挂起、锁屏和屏幕熄灭时间。</p>
+<h1 id="踩坑记录与故障截图"><a href="#踩坑记录与故障截图" class="headerlink" title="踩坑记录与故障截图"></a>踩坑记录与故障截图</h1><p>下面保留四张实际排错时的截图，方便遇到相同提示时对照。六屏点亮的过程按当时记录整理，没有附上缺失的结果截图。</p>
+<h2 id="开发目录缺失，DKMS-无法构建"><a href="#开发目录缺失，DKMS-无法构建" class="headerlink" title="开发目录缺失，DKMS 无法构建"></a>开发目录缺失，DKMS 无法构建</h2><p><img src="about:blank" alt="DKMS 报告旧内核的 build/source 开发目录不存在" loading='lazy'></p>
+<p>截图中的报错为 <code>Your kernel headers ... cannot be found</code>。在本次 Rocky 环境中，通过补齐对应版本的 <code>kernel-devel</code> 并确认 <code>build/Makefile</code> 存在，解决了开发目录缺失问题。</p>
+<h2 id="DKMS-还要求-kernel-devel-matched"><a href="#DKMS-还要求-kernel-devel-matched" class="headerlink" title="DKMS 还要求 kernel-devel-matched"></a>DKMS 还要求 kernel-devel-matched</h2><p><img src="about:blank" alt="安装 NVIDIA 驱动时，DKMS 的 matched 依赖被 kernel 排除规则阻止" loading='lazy'></p>
+<p>第二台出现的依赖关系是：DKMS 要求 <code>(kernel-devel-matched if kernel-core)</code>。<code>--exclude=&#39;kernel*&#39;</code> 也会排除尚未安装的 matched 包。</p>
+<p>解决方式是在安装驱动前，先从官方归档安装<strong>与旧内核相同版本</strong>的 matched 包；不是取消所有内核限制，也不是直接安装最新 matched 包。</p>
+<h2 id="软件包已安装，但-Secure-Boot-开启，模块没有加载"><a href="#软件包已安装，但-Secure-Boot-开启，模块没有加载" class="headerlink" title="软件包已安装，但 Secure Boot 开启，模块没有加载"></a>软件包已安装，但 Secure Boot 开启，模块没有加载</h2><p><img src="about:blank" alt="驱动包已安装，但 nvidia-smi 无法连接；Secure Boot 显示 enabled，模块列表为空" loading='lazy'></p>
+<p>第二台截图显示：</p>
+<ul>
+<li><code>nvidia-open</code> 已安装。</li>
+<li><code>nvidia-smi</code> 无法连接 NVIDIA 驱动。</li>
+<li><code>SecureBoot enabled</code>。</li>
+<li><code>lsmod</code> 没有显示 NVIDIA 模块。</li>
+</ul>
+<p>第二台关闭 Secure Boot 并重启后，驱动恢复正常。若安全启动必须保留，则应处理模块签名与信任登记，不能把关闭当成唯一方案。</p>
+<p><img src="about:blank" alt="排查过程中读取的内核日志，主要显示证书和 NVIDIA HDMI/DP 音频设备记录" loading='lazy'></p>
+<p>这张日志截图本身没有显示明确的签名拒绝错误。出现 NVIDIA 音频设备或证书字样，也不等于 NVIDIA 显示模块已经加载；应结合模块状态和 <code>nvidia-smi</code> 判断。</p>
+<h2 id="常用排错命令"><a href="#常用排错命令" class="headerlink" title="常用排错命令"></a>常用排错命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">uname</span> -r</span><br><span class="line">dkms status</span><br><span class="line">mokutil --sb-state</span><br><span class="line">lsmod | grep -E <span class="string">&#x27;nvidia|nouveau&#x27;</span></span><br><span class="line"><span class="built_in">sudo</span> journalctl -k -b --no-pager | grep -Ei <span class="string">&#x27;nvidia|nouveau|NVRM|verification|key was rejected&#x27;</span> | <span class="built_in">tail</span> -n 50</span><br></pre></td></tr></table></figure>
+
+<p>检查 Xorg 配置和本次启动日志：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/X11/xorg.conf.d/10-nvidia.conf</span><br><span class="line">ps -eo user,pid,args | grep <span class="string">&#x27;[X]org&#x27;</span></span><br><span class="line"><span class="built_in">sudo</span> journalctl -b _COMM=Xorg --no-pager -n 60</span><br></pre></td></tr></table></figure>
+
+<p>如果最后 60 行只有显示器探测记录，应继续查找更早的初始化&#x2F;错误记录，不能据此断言不存在错误。旧的 <code>/var/log/Xorg.0.log</code> 也可能不属于当前会话。</p>
+<h1 id="黑屏时的恢复路径"><a href="#黑屏时的恢复路径" class="headerlink" title="黑屏时的恢复路径"></a>黑屏时的恢复路径</h1><p>如果安装或切换显示后黑屏，先等待几分钟并观察所有屏幕，避免在后台仍编译时断电。尝试 <code>Ctrl + Alt + F3</code> 或 <code>Ctrl + Alt + F4</code> 进入文字终端。</p>
+<p>若无法操作，先尝试短按电源键正常关机；只有持续无响应时才考虑长按强制关机，后者可能丢失未写入数据。</p>
+<p>通过 GRUB 临时进入文字模式：</p>
+<ol>
+<li>开机显示内核菜单，选择原来的 <code>611.5.1.el9_7</code> 内核。</li>
+<li>按 <code>e</code> 编辑。</li>
+<li>找到以 <code>linux</code> 开头的长行，保留 <code>root=</code> 等参数，删除 <code>rhgb quiet</code>。</li>
+<li>在该行末尾加空格及 <code>systemd.unit=multi-user.target</code>。</li>
+<li>按 <code>Ctrl + X</code> 启动，使用普通账户登录。</li>
+</ol>
+<p>此修改只影响本次启动，不是重装或永久改成文字模式。</p>
+<p>如果黑屏发生在修改 Xorg 配置之后，可恢复之前确实创建过的备份：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">cp</span> -a /etc/X11/10-nvidia.conf.before-dual-gpu /etc/X11/xorg.conf.d/10-nvidia.conf</span><br><span class="line"><span class="built_in">sudo</span> reboot</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/rocky-linux.html">NVIDIA：Rocky Linux 驱动安装</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/pre-installation-actions.html">NVIDIA：安装前检查与内核开发包</a></li>
+<li><a target="_blank" rel="noopener" href="https://download.nvidia.com/XFree86/Linux-x86_64/580.142/README/kernel_open.html">NVIDIA：开放内核模块与 Blackwell 支持</a></li>
+<li><a target="_blank" rel="noopener" href="https://download.nvidia.com/XFree86/Linux-x86_64/580.142/README/xconfigoptions.html">NVIDIA：X 配置选项，包括 SLI、BaseMosaic</a></li>
+<li><a target="_blank" rel="noopener" href="https://download.nvidia.com/XFree86/Linux-x86_64/575.64/README/randr14.html">NVIDIA：RandR 跨显卡显示说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.nvidia.com/deploy/nvidia-smi/index.html">NVIDIA：nvidia-smi 字段说明</a></li>
+<li><a target="_blank" rel="noopener" href="https://download.rockylinux.org/vault/rocky/9.7/AppStream/x86_64/os/Packages/k/">Rocky：9.7 AppStream 官方归档</a></li>
+<li><a target="_blank" rel="noopener" href="https://access.redhat.com/solutions/4326431">Red Hat：默认内核修改</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/configuring_basic_system_settings/managing-systemd_configuring-basic-system-settings">Red Hat：systemd 启动目标与文字模式</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.asus.com.cn/support/faq/1049829/">华硕：开启或关闭 Secure Boot</a></li>
+<li><a target="_blank" rel="noopener" href="https://help.gnome.org/gnome-help/display-dual-monitors.html">GNOME：多显示器与主屏设置</a></li>
+</ul>
+<p>这篇文章记录的是本次环境下的安装和排错过程。以后更换内核或更新驱动时，我会重新检查 Wi-Fi、驱动模块和六屏布局是否能正常恢复；其他机器也需要按自己的内核版本和显示接口调整。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://juanxcg.cn">Juanxcg</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://juanxcg.cn/rocky-linux-9-7-dual-rtx-5050/">https://juanxcg.cn/rocky-linux-9-7-dual-rtx-5050/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://juanxcg.cn" target="_blank">Juanxcg' Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/Rocky-Linux/">Rocky Linux</a><a class="post-meta__tags" href="/tags/NVIDIA/">NVIDIA</a><a class="post-meta__tags" href="/tags/%E5%A4%9A%E5%B1%8F%E6%98%BE%E7%A4%BA/">多屏显示</a></div><div class="post-share"><div class="social-share" data-image="about:blank" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/diskgenius-c-drive-expansion/" title="DiskGenius 分享：D 盘有空闲却压缩不了，怎么给 C 盘扩容？"><img class="cover" src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/dg-logo-150.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post" loading='lazy'><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">DiskGenius 分享：D 盘有空闲却压缩不了，怎么给 C 盘扩容？</div></div><div class="info-2"><div class="info-item-1">C 盘快满了，D 盘却分不出多少空间C 盘越来越小，D 盘明明还空着很多容量，打开 Windows 的“磁盘管理”压缩 D 盘，却只能压缩出一点点空间。这种时候，可以试试 DiskGenius。 它是一款磁盘分区管理工具，也提供数据恢复、备份和系统迁移等功能。这里主要分享它的分区扩容功能：在同一块固态硬盘上，把 D 盘的一部分容量重新分配给 C 盘。 可以从 DiskGenius 中文官网下载。按目前的官方功能对比，免费版就支持无损调整分区大小和无损扩容分区，普通扩容可以先用免费版。   为什么有很多空闲空间，却压缩不了？D 盘内部的文件和空闲空间可能分散在不同位置。Windows 压缩卷时会搬移普通文件，但有些文件在当前系统环境下无法移动，例如分页文件、卷影副本存储区域，以及部分文件系统元数据。如果这些文件的位置比较靠后，就可能限制 D 盘能缩小到什么程度。 可以简单理解成这样，下面表示分区内部的逻辑位置： 1D 盘：[文件][空闲][文件][空闲][不可移动文件][空闲]  所以，“空闲空间总量”与“Windows 当前能压缩出的容量”会有差别。微软的压缩卷说明和收缩接口文档...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Juanxcg.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">Juanxcg</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">19</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Juanxcg"><i class="fab fa-github"></i><span>点击进入我的Github</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Juanxcg" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">前述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E6%AC%A1%E7%8E%AF%E5%A2%83%E4%B8%8E%E7%BB%93%E6%9E%9C"><span class="toc-number">2.</span> <span class="toc-text">本次环境与结果</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%89%8D%E4%B8%8E-BIOS-%E8%AE%BE%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text">安装前与 BIOS 设置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E7%B3%BB%E7%BB%9F%E3%80%81%E7%BD%91%E7%BB%9C%E5%92%8C%E5%8F%8C%E5%8D%A1"><span class="toc-number">4.</span> <span class="toc-text">检查系统、网络和双卡</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BF%9D%E7%95%99%E7%BD%91%E7%BB%9C%E6%AD%A3%E5%B8%B8%E7%9A%84%E5%86%85%E6%A0%B8"><span class="toc-number">5.</span> <span class="toc-text">保留网络正常的内核</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E5%85%B7%E4%B8%8E%E5%8C%B9%E9%85%8D%E7%9A%84%E5%BC%80%E5%8F%91%E5%8C%85"><span class="toc-number">6.</span> <span class="toc-text">准备工具与匹配的开发包</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E8%BD%AF%E4%BB%B6%E6%BA%90"><span class="toc-number">6.1.</span> <span class="toc-text">准备软件源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%A4%E4%B8%AA%E7%B2%BE%E7%A1%AE%E5%8C%B9%E9%85%8D%E7%9A%84%E5%BC%80%E5%8F%91%E5%8C%85"><span class="toc-number">6.2.</span> <span class="toc-text">安装两个精确匹配的开发包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%92%E6%A1%A3%E4%B8%8B%E8%BD%BD%E6%85%A2%E6%97%B6"><span class="toc-number">6.3.</span> <span class="toc-text">归档下载慢时</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-NVIDIA-%E5%BC%80%E6%94%BE%E6%A8%A1%E5%9D%97%E9%A9%B1%E5%8A%A8"><span class="toc-number">7.</span> <span class="toc-text">安装 NVIDIA 开放模块驱动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-X11%EF%BC%8C%E6%A3%80%E6%9F%A5-SLI-BaseMosaic"><span class="toc-number">8.</span> <span class="toc-text">使用 X11，检查 SLI&#x2F;BaseMosaic</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%89%E7%9B%B8%E5%90%8C%E9%85%8D%E7%BD%AE%E6%97%B6%EF%BC%8C%E5%85%88%E5%A4%87%E4%BB%BD%E5%86%8D%E4%BF%AE%E6%94%B9"><span class="toc-number">8.1.</span> <span class="toc-text">有相同配置时，先备份再修改</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%86%E5%88%AB%E5%B9%B6%E5%90%AF%E7%94%A8%E5%85%AD%E4%B8%AA%E5%B1%8F%E5%B9%95"><span class="toc-number">9.</span> <span class="toc-text">识别并启用六个屏幕</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E5%B8%83%E5%B1%80%E4%B8%8E%E5%AE%8C%E6%88%90%E9%AA%8C%E6%94%B6"><span class="toc-number">10.</span> <span class="toc-text">保存布局与完成验收</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95%E4%B8%8E%E6%95%85%E9%9A%9C%E6%88%AA%E5%9B%BE"><span class="toc-number">11.</span> <span class="toc-text">踩坑记录与故障截图</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%8F%91%E7%9B%AE%E5%BD%95%E7%BC%BA%E5%A4%B1%EF%BC%8CDKMS-%E6%97%A0%E6%B3%95%E6%9E%84%E5%BB%BA"><span class="toc-number">11.1.</span> <span class="toc-text">开发目录缺失，DKMS 无法构建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DKMS-%E8%BF%98%E8%A6%81%E6%B1%82-kernel-devel-matched"><span class="toc-number">11.2.</span> <span class="toc-text">DKMS 还要求 kernel-devel-matched</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E4%BB%B6%E5%8C%85%E5%B7%B2%E5%AE%89%E8%A3%85%EF%BC%8C%E4%BD%86-Secure-Boot-%E5%BC%80%E5%90%AF%EF%BC%8C%E6%A8%A1%E5%9D%97%E6%B2%A1%E6%9C%89%E5%8A%A0%E8%BD%BD"><span class="toc-number">11.3.</span> <span class="toc-text">软件包已安装，但 Secure Boot 开启，模块没有加载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E6%8E%92%E9%94%99%E5%91%BD%E4%BB%A4"><span class="toc-number">11.4.</span> <span class="toc-text">常用排错命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%BB%91%E5%B1%8F%E6%97%B6%E7%9A%84%E6%81%A2%E5%A4%8D%E8%B7%AF%E5%BE%84"><span class="toc-number">12.</span> <span class="toc-text">黑屏时的恢复路径</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">13.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/rocky-linux-9-7-dual-rtx-5050/" title="Rocky Linux 9.7 安装 NVIDIA 驱动：双 RTX 5050 六屏配置与踩坑记录"><img src="about:blank" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Rocky Linux 9.7 安装 NVIDIA 驱动：双 RTX 5050 六屏配置与踩坑记录"/ loading='lazy'></a><div class="content"><a class="title" href="/rocky-linux-9-7-dual-rtx-5050/" title="Rocky Linux 9.7 安装 NVIDIA 驱动：双 RTX 5050 六屏配置与踩坑记录">Rocky Linux 9.7 安装 NVIDIA 驱动：双 RTX 5050 六屏配置与踩坑记录</a><time datetime="2026-10-18T14:54:42.000Z" title="发表于 2026-10-18 22:54:42">2026-10-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/diskgenius-c-drive-expansion/" title="DiskGenius 分享：D 盘有空闲却压缩不了，怎么给 C 盘扩容？"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/dg-logo-150.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="DiskGenius 分享：D 盘有空闲却压缩不了，怎么给 C 盘扩容？"/ loading='lazy'></a><div class="content"><a class="title" href="/diskgenius-c-drive-expansion/" title="DiskGenius 分享：D 盘有空闲却压缩不了，怎么给 C 盘扩容？">DiskGenius 分享：D 盘有空闲却压缩不了，怎么给 C 盘扩容？</a><time datetime="2026-10-09T01:32:05.000Z" title="发表于 2026-10-09 09:32:05">2026-10-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/miaomiaowangwangwo/" title="喵喵汪汪窝——一款陪你完成计划的软件"><img src="/image/miaomiaowangwangwo-v037/miaomiaowangwangwo-v037-cover.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="喵喵汪汪窝——一款陪你完成计划的软件"/ loading='lazy'></a><div class="content"><a class="title" href="/miaomiaowangwangwo/" title="喵喵汪汪窝——一款陪你完成计划的软件">喵喵汪汪窝——一款陪你完成计划的软件</a><time datetime="2026-07-23T09:01:48.000Z" title="发表于 2026-07-23 17:01:48">2026-07-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/03/21/Works/" title="游戏开发作品集"><img src="/image/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%BD%9C%E5%93%81%E9%9B%86/%E4%BD%9C%E5%93%81%E9%9B%86.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="游戏开发作品集"/ loading='lazy'></a><div class="content"><a class="title" href="/2026/03/21/Works/" title="游戏开发作品集">游戏开发作品集</a><time datetime="2026-03-21T07:04:03.000Z" title="发表于 2026-03-21 15:04:03">2026-03-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/12/AssistProject/" title="Unity项目文件详解"><img src="https://cdn.jsdelivr.net/gh/Juanxcg/blog-img/Head.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Unity项目文件详解"/ loading='lazy'></a><div class="content"><a class="title" href="/2026/01/12/AssistProject/" title="Unity项目文件详解">Unity项目文件详解</a><time datetime="2026-01-12T06:56:23.000Z" title="发表于 2026-01-12 14:56:23">2026-01-12</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By Juanxcg</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+  const getUtterancesTheme = theme => theme === 'dark' ? 'photon-dark' : 'github-light'
+
+  const loadUtterances = (el = document, key) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyUtterances = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const config = {
+      src: 'https://utteranc.es/client.js',
+      repo: 'Juanxcg/Juanxcg.github.io',
+      theme: getUtterancesTheme(document.documentElement.getAttribute('data-theme')),
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      'issue-term': isShuoshuo ? key : (option && option['issue-term']) || 'pathname'
+    }
+
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => ele.setAttribute(key, value))
+    el.querySelector('#utterances-wrap').appendChild(ele)
+  }
+
+  const changeUtterancesTheme = theme => {
+    const iframe = document.querySelector('#utterances-wrap iframe')
+    if (iframe) {
+      const message = {
+        type: 'set-theme',
+        theme: getUtterancesTheme(theme)
+      };
+      iframe.contentWindow.postMessage(message, 'https://utteranc.es')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeUtterancesTheme, 'utterances')
+
+  if (isShuoshuo) {
+    'Utterances' === 'Utterances'
+      ? window.shuoshuoComment = { loadComment: loadUtterances }
+      : window.loadOtherComment = loadUtterances
+    return
+  }
+  
+  if ('Utterances' === 'Utterances' || !false) {
+    if (false) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+    else loadUtterances()
+  } else {
+    window.loadOtherComment = loadUtterances
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
