@@ -355,19 +355,15 @@ xrandr --output DP-1-0 --auto --right-of DP-2 --output DP-1-2 --auto --right-of 
 
 如用于长期展示，再按需要调整自动挂起、锁屏和屏幕熄灭时间。
 
-# 踩坑记录与故障截图
+# 踩坑记录与处理方法
 
-下面保留四张实际排错时的截图，方便遇到相同提示时对照。六屏点亮的过程按当时记录整理，没有附上缺失的结果截图。
+下面按本次遇到的错误提示整理处理方法，方便遇到相同问题时对照。
 
 ## 开发目录缺失，DKMS 无法构建
 
-![DKMS 报告旧内核的 build/source 开发目录不存在](about:blank)
-
-截图中的报错为 `Your kernel headers ... cannot be found`。在本次 Rocky 环境中，通过补齐对应版本的 `kernel-devel` 并确认 `build/Makefile` 存在，解决了开发目录缺失问题。
+当时的报错为 `Your kernel headers ... cannot be found`。在本次 Rocky 环境中，通过补齐对应版本的 `kernel-devel` 并确认 `build/Makefile` 存在，解决了开发目录缺失问题。
 
 ## DKMS 还要求 kernel-devel-matched
-
-![安装 NVIDIA 驱动时，DKMS 的 matched 依赖被 kernel 排除规则阻止](about:blank)
 
 第二台出现的依赖关系是：DKMS 要求 `(kernel-devel-matched if kernel-core)`。`--exclude='kernel*'` 也会排除尚未安装的 matched 包。
 
@@ -375,9 +371,7 @@ xrandr --output DP-1-0 --auto --right-of DP-2 --output DP-1-2 --auto --right-of 
 
 ## 软件包已安装，但 Secure Boot 开启，模块没有加载
 
-![驱动包已安装，但 nvidia-smi 无法连接；Secure Boot 显示 enabled，模块列表为空](about:blank)
-
-第二台截图显示：
+第二台当时的状态是：
 
 - `nvidia-open` 已安装。
 - `nvidia-smi` 无法连接 NVIDIA 驱动。
@@ -386,9 +380,7 @@ xrandr --output DP-1-0 --auto --right-of DP-2 --output DP-1-2 --auto --right-of 
 
 第二台关闭 Secure Boot 并重启后，驱动恢复正常。若安全启动必须保留，则应处理模块签名与信任登记，不能把关闭当成唯一方案。
 
-![排查过程中读取的内核日志，主要显示证书和 NVIDIA HDMI/DP 音频设备记录](about:blank)
-
-这张日志截图本身没有显示明确的签名拒绝错误。出现 NVIDIA 音频设备或证书字样，也不等于 NVIDIA 显示模块已经加载；应结合模块状态和 `nvidia-smi` 判断。
+当时读取的内核日志没有显示明确的签名拒绝错误。出现 NVIDIA 音频设备或证书字样，也不等于 NVIDIA 显示模块已经加载；应结合模块状态和 `nvidia-smi` 判断。
 
 ## 常用排错命令
 
